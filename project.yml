@@ -43,7 +43,7 @@ targets:
         NSAlarmKitUsageDescription: "O Mais 5 Minutinhos usa alarmes para tocar na hora certa, mesmo com o iPhone no silencioso."  # copy 15.9
         NSSupportsLiveActivities: true        # Live Activity da soneca (spec 4)
         UILaunchScreen:
-          UIColorName: ""
+          UIColorName: LaunchBackground       # preto: abertura sem clarão à noite (princípio 0.3)
         UIApplicationSupportsIndirectInputEvents: true
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

@@ -19,6 +19,8 @@ Despertador de cabeceira para iPhone: à noite, relógio grande e escuro; de man
 - `brilho_cabeceira` default 0,30. LED do modo cabeceira sempre com a cor cheia (o brilho da tela controla a luz).
 - Modo cabeceira automático (11.4): de lado na horizontal **ou** deitado de costas (tela para cima). Posição detectada pelo acelerômetro, porque funciona com o bloqueio de rotação ligado.
 - Dica de volume na tela 10.2: "O alarme toca no volume de toque do iPhone."
+- Erro genérico do AlarmKit (a seção 15 não define): título "Erro no alarme", texto "Não foi possível salvar. Tente de novo.", botão "OK".
+- Permissão negada ao salvar: o alarme é gravado **inativo** e abre a 10.8. `maximumLimitReached`: gravado inativo + copy 15.6. Outro erro: nada é gravado e a sheet continua aberta.
 
 ## Convenções (seção 18)
 - **Idioma:** modelos SwiftData em português, com propriedades no snake_case exato do spec (`dias_repeticao`, `soneca_minutos`). Enums do banco: `SomAlarme`, `TemaRelogio`, `CorRelogio`, com raw value snake_case. Todo o resto do código, variáveis e arquivos em inglês.
@@ -34,8 +36,13 @@ Core/Alarm/             Mais5Metadata (AlarmMetadata), StopAlarmIntent (Parar da
 Core/Persistence/       DatabaseEnums, SchemaV1 (Alarme, Preferencias), Persistence (container + singleton), MigrationPlan
 Core/Sound/, Core/Purchase/          épicos 8.4 e 8.8
 Features/Bedside/       LEDClockView (7 segmentos em Canvas), BedsideController (brilho/idle/orientação), BedsideView (4C)
-Features/Spike/         app mínimo do spike 8.1. TEMPORÁRIO: sai quando a tela 10.1 entrar (8.3)
-Features/Alarms, SoundPicker, Ringing, Settings, Paywall   épicos 8.3–8.8
+Core/Alarm/             + AlarmScheduler (única porta para o AlarmKit), Reconciliation (plano puro da 11.6), NextAlarm/ClockFormat, Weekdays
+Core/Sound/             SoundCatalog (sons, grátis/pagos, customSoundsEnabled, som efetivo)
+App/RootView            lista + cabeceira por cima + 10.5 + 10.8; observa `alarmUpdates` e reconcilia ao voltar ao primeiro plano
+Features/Alarms/        AlarmListView (10.1), AlarmEditView (10.2), PermissionDeniedView (10.8), AlarmController (ordem AlarmKit → SwiftData)
+Features/Ringing/       RingingView (10.5, opção 5A): versão inicial, validada no 8.6
+Features/Settings/      ClockPalette (cores do relógio); Ajustes no 8.7
+Features/SoundPicker, Paywall   épicos 8.4 e 8.8
 Resources/Sounds/       .caf (Linear PCM 44,1 kHz mono ≤ 30 s) + LICENSES.md
 Widget/                 extension com a Live Activity da soneca (AlarmAttributes<Mais5Metadata>)
 Tests/                  Swift Testing (seção 22)
@@ -57,4 +64,9 @@ xcrun devicectl device install app --device <id> build/DerivedData/Build/Product
 - **iOS 26.1+:** o botão de parar da tela bloqueada é do sistema ("deslizar para parar") e o app não controla. O botão secundário usa `tintColor` como fundo, então o texto dele precisa ser preto.
 - **Dias da semana:** o AlarmKit usa `Locale.Weekday`, e o banco usa 1–7 (1 = domingo).
 - **Brilho precisa ser restaurado:** o iOS mantém o brilho definido pelo app mesmo fora dele. O `BedsideController` devolve o brilho ao sair do primeiro plano e guarda um valor pendente em `UserDefaults` para o caso de o app ser fechado à força. **Não instale uma build nova com o modo cabeceira aberto no aparelho.**
+- **SF Symbols:** `alarm.slash` não existe; a 10.8 compõe `alarm` + `line.diagonal`. Confira símbolos novos em `/System/Library/CoreServices/CoreGlyphs.bundle/Contents/Resources/name_availability.plist`.
+- **Toggle na linha da lista:** não ponha `onTapGesture` na linha inteira, porque ele captura o toque do toggle. Só a área de hora e texto é botão de edição.
+- **Closure no `set` de `Binding`:** passar uma função `@MainActor` fez o compilador (Xcode 26.1.1) travar. Capture só valores `Sendable` (controlador `@MainActor` + UUID).
+- **Simulador:** o toque sintético curto não liga `Toggle`. Use `duration: 0.15`.
+- **Abertura do app:** o `UILaunchScreen` usa a cor `LaunchBackground` (preta), para não haver clarão branco à noite.
 - **Data em pt-BR:** use `Locale(identifier: "pt_BR")` nos textos de data. O aparelho de teste está em inglês.

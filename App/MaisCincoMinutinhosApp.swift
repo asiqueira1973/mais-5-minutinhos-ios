@@ -3,8 +3,7 @@ import SwiftUI
 
 // Ponto de entrada do app: cria o container SwiftData versionado, garante o
 // singleton de `preferencias` (épico 8.2) e aplica o modo escuro permanente
-// (decisão de design). A tela inicial ainda é a do spike; a lista de alarmes
-// (tela 10.1) a substitui no épico 8.3.
+// (decisão de design). A tela inicial é a lista de alarmes (10.1, via `RootView`).
 @main
 struct MaisCincoMinutinhosApp: App {
     // Delegate só para travar a orientação (paisagem no modo cabeceira, 8.5).
@@ -26,8 +25,7 @@ struct MaisCincoMinutinhosApp: App {
 
     var body: some Scene {
         WindowGroup {
-            SpikeView()
-                .preferredColorScheme(.dark)
+            RootView()
         }
         .modelContainer(container)
     }
