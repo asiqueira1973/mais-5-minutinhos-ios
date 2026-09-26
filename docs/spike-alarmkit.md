@@ -71,7 +71,7 @@ Decisão: `customSoundsEnabled` = **true** (som próprio funciona no iOS 26.6.2)
 
 ## Divergências e achados para o spec
 
-1. **Parar na tela bloqueada é "deslizar para parar" (slide to stop)**, desenhado pelo sistema a partir do iOS 26.1 (`stopButton` descontinuado). Contraria o princípio 0.1 só na apresentação do sistema. Na tela 10.5 do app e na Live Activity, Parar continua sendo um toque. Não há como o app mudar isso.
+1. **Parar na tela bloqueada é "deslizar para parar" (slide to stop)**, desenhado pelo sistema a partir do iOS 26.1 (`stopButton` descontinuado). Contraria o princípio 0.1 só na apresentação do sistema. Na tela 10.5 do app e na Live Activity, Parar continua sendo um toque. Não há como o app mudar isso. **Aceito por Alexandre em 26/09/2026.**
 2. **O botão secundário (Soneca) usa `tintColor` como fundo.** Com `textColor` igual à cor, o texto ficou invisível (bug do spike, corrigido para `.black`). O design previa Soneca com fundo a 22% e texto na cor; na apresentação do sistema o resultado é fundo na cor e texto preto.
-3. **Volume segue o de toque (25.3).** Pelo spec, a tela 10.2 ganha uma dica, mas o texto dela não existe na seção 15. Aguardando a copy.
+3. **Volume segue o de toque (25.3).** Pelo spec, a tela 10.2 ganha uma dica, e o texto dela não existe na seção 15. **Copy definida por Alexandre (26/09/2026):** "O alarme toca no volume de toque do iPhone."
 4. Os textos do sistema ("slide to stop", "Show less") seguem o idioma do aparelho (o de teste está em inglês).
