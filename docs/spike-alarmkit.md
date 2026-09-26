@@ -81,3 +81,4 @@ Decisão: `customSoundsEnabled` = **true** (som próprio funciona no iOS 26.6.2)
 - **Regra 11.4, "aparelho em paisagem":** vale **de lado na horizontal (com suporte)** ou **deitado de costas na mesa (tela para cima)**. Decisão de Alexandre em 26/09/2026.
 - **Detecção da posição:** a maioria das pessoas usa o bloqueio de rotação, e com ele ligado `UIDevice.orientation` não informa a paisagem. A detecção usa o acelerômetro (CoreMotion, sem permissão). A interface do modo cabeceira é sempre forçada para paisagem (`requestGeometryUpdate`).
 - A prévia do modo cabeceira (layout 4C, tema LED) foi aprovada visualmente no iPhone às 12:57.
+- **Brilho com o alarme tocando no modo cabeceira:** o teste de 12:59 mostrou que a tela 10.5 ficava a 15%, escura demais. Enquanto o alarme toca, o brilho sobe para 60% (mesmo valor do toque, regra 8.5) e volta ao `brilho_cabeceira` depois de Soneca ou Parar. O spec não define esse valor; a decisão segue os princípios 0.1 e 0.3.

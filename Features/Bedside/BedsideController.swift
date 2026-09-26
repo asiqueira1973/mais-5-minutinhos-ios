@@ -66,6 +66,17 @@ final class BedsideController {
         }
     }
 
+    // Alarme tocando com o modo cabeceira aberto: sobe o brilho para o mesmo valor
+    // do toque (60%) para a pessoa enxergar Soneca/Parar; ao terminar, volta ao
+    // brilho da noite (decisão do spike 8.1, ver docs/spike-alarmkit.md).
+    // Entradas: true quando começa a tocar, false quando para ou entra em soneca.
+    // Saída: nenhuma.
+    func setRinging(_ ringing: Bool) {
+        awakeTask?.cancel()
+        isAwake = false
+        screen?.brightness = ringing ? max(nightBrightness, 0.6) : nightBrightness
+    }
+
     // Aplica a trava de orientação e pede a rotação ao sistema.
     // Entradas: máscara permitida e orientação preferida. Saída: nenhuma.
     private func setOrientation(_ mask: UIInterfaceOrientationMask, preferred: UIInterfaceOrientationMask) {

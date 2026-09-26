@@ -4,11 +4,13 @@ import SwiftUI
 // à esquerda, divisor vertical e coluna à direita com dia e próximo alarme.
 // Fundo preto puro (spec 16); a cor do relógio é a única cor (design system).
 // Entradas: cor do relógio, brilho da noite, texto do próximo alarme (nil =
-// copy 15.4) e ação de sair. Saída: view em tela cheia.
+// copy 15.4), se há alarme tocando e ação de sair. Saída: view em tela cheia.
 struct BedsideView: View {
     let color: Color
     var brightness: Double = 0.15
     var nextAlarm: (time: String, day: String)?
+    // true enquanto um alarme toca por cima do modo (tela 10.5).
+    var isRinging = false
     let onExit: () -> Void
 
     @State private var controller = BedsideController()
@@ -29,6 +31,7 @@ struct BedsideView: View {
         .persistentSystemOverlays(.hidden)
         .onAppear { controller.enter(brightness: brightness) }
         .onDisappear { controller.exit() }
+        .onChange(of: isRinging) { _, ringing in controller.setRinging(ringing) }
         .task { await shiftEveryMinute() }
     }
 

@@ -41,6 +41,7 @@ struct SpikeView: View {
                 BedsideView(
                     color: SpikeModel.tint,
                     nextAlarm: model.nextAlarm(),
+                    isRinging: model.alertingID != nil,
                     onExit: { showsBedside = false }
                 )
             }
