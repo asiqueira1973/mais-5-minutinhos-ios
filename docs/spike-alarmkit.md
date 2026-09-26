@@ -54,16 +54,17 @@ Teste parcial em 26/09/2026, 12:38–12:40, com o app aberto:
 - O som ouvido foi o **bipe provisório** do bundle, e não o som padrão nem um bipe de erro.
 - A Live Activity da soneca aparece na tela bloqueada (print às 12:40): `zzz` + rótulo na cor, contagem regressiva grande (3:13) e botão "Parar" vermelho com texto preto, conforme o design (tela 9). Com mais de um alarme, o sistema empilha as atividades sob o nome "5 Minutinhos" (12:42: duas sonecas simultâneas, som próprio e som padrão).
 - O botão **Parar** da Live Activity (`StopAlarmIntent`) encerrou a soneca e a atividade sumiu da tela bloqueada.
+- 12:45: alarme com `bipe_digital.caf`, app fechado e chave do silencioso ligada → tocou com o bipe do bundle. Apertar o botão de volume para cima interrompeu o toque.
 - `cancel(id:)` em todos os alarmes ("Cancelar todos") também remove as Live Activities de soneca em andamento. A exclusão e o toggle da seção 8.3 não deixam contagem órfã.
 - 999664D2 (bipe_digital.caf, agendado às 12:38:29 para 12:40) tocou em seguida, como esperado.
 
 | Critério 8.1 | Resultado |
 |---|---|
-| Toca com app fechado, no silencioso, com botões na tela bloqueada | |
-| Som é o arquivo do bundle (P1) | ✅ com o app aberto (iOS 26.6.2); falta confirmar com o app fechado |
+| Toca com app fechado, no silencioso, com botões na tela bloqueada | ✅ tocou às 12:45 com o app fechado e no silencioso; botões da tela bloqueada a confirmar |
+| Som é o arquivo do bundle (P1) | ✅ com o app aberto e com o app fechado no silencioso (iOS 26.6.2) |
 | App recebe `alerting` e mostra a tela em ≤ 1 s (P2) | ✅ 82 ms |
 | Parar na tela do app silencia em ≤ 1 s (P3) | |
 | Soneca mostra contagem e volta a tocar depois de 5 min | ✅ contagem apareceu; falta confirmar se volta a tocar depois de 5 min |
-| Volume segue toque ou mídia (25.3) | |
+| Volume segue toque ou mídia (25.3) | ⚠️ inconclusivo: apertar o volume para cima **silenciou o alarme** (comportamento do sistema). Repetir mudando o volume antes do toque |
 
 Decisão: `customSoundsEnabled` = _preencher_
