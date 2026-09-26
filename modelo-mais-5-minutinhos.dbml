@@ -1,0 +1,54 @@
+// Mais 5 Minutinhos — modelo de dados local (SwiftData), espelho da seção 7 do SDD v1.1
+
+enum som_alarme {
+  padrao_iphone
+  bipe_digital
+  campainha_classica
+  sino
+  despertar_suave
+  passaros
+  piano_manha
+  radio_relogio
+}
+
+enum tema_relogio {
+  led_classico
+  digital_fino
+  grande_negrito
+  flip
+}
+
+enum cor_relogio {
+  vermelho
+  ambar
+  verde
+  azul
+  branco
+}
+
+// Hard delete. Máximo de 10 linhas (regra 11.1).
+// O id é o mesmo Alarm.ID usado no AlarmKit.
+Table alarme {
+  id uuid [pk, not null]
+  hora int [not null, note: '0-23']
+  minuto int [not null, note: '0-59']
+  dias_repeticao "int[]" [not null, default: `[]`, note: '1=domingo..7=sábado; vazio = toca uma vez']
+  rotulo text [note: 'nulo quando sem nome; máx. 30 caracteres']
+  som som_alarme [not null, default: 'padrao_iphone']
+  soneca_ativa bool [not null, default: true]
+  soneca_minutos int [not null, default: 9, note: 'só 5, 9, 10 ou 15']
+  ativo bool [not null, default: true]
+  criado_em timestamp [not null]
+  atualizado_em timestamp [not null]
+}
+
+// Singleton: exatamente uma linha, criada no primeiro launch.
+Table preferencias {
+  id uuid [pk, not null]
+  tema_relogio tema_relogio [not null, default: 'led_classico']
+  cor_relogio cor_relogio [not null, default: 'vermelho']
+  formato_24h bool [not null, default: true]
+  mostrar_segundos bool [not null, default: false]
+  brilho_cabeceira double [not null, default: 0.15, note: '0.05-1.0']
+  entrar_automatico bool [not null, default: true]
+}

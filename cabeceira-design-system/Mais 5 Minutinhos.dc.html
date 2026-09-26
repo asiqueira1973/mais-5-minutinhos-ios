@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"></meta><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&amp;family=Big+Shoulders+Display:wght@100..900&amp;display=swap"></link><style>body{margin:0;background:#E9E8E4;-webkit-font-smoothing:antialiased}a{color:#C4291F}a:hover{color:#8E1C15}</style></helmet>
+<div style="padding:96px;display:flex;flex-direction:column;gap:140px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;color:#1C1C1E">
+
+<header style="display:flex;flex-direction:column;gap:16px;max-width:980px">
+  <div style="font-size:15px;color:#6B6A66">App iOS · iPhone · pt-BR · setembro 2026</div>
+  <div style="font-size:56px;font-weight:700;letter-spacing:-1px;line-height:1.05">Mais 5 Minutinhos – Despertador</div>
+  <div style="font-size:19px;line-height:1.5;color:#3A3A3C;text-wrap:pretty">Direção: à noite, a tela é só preto puro e a cor do relógio. Nenhuma outra cor aparece nas telas noturnas. As telas de configuração usam o iOS em modo escuro permanente, e a cor do relógio vira o tint do app (botões, toggles, links). Resultado: o app inteiro fica escuro e calmo e a pessoa sente que o relógio escolhido é a identidade dele.</div>
+  <div style="display:flex;gap:24px;font-size:15px;flex-wrap:wrap"><a href="#relogio">Relógio</a><a href="#4a">4 · Cabeceira</a><a href="#5a">5 · Alarme tocando</a><a href="#telas">Telas 1–3, 6–8</a><a href="#sistema">9 · Sistema</a><a href="#icone">Ícone</a><a href="#ds">Design system</a></div>
+</header>
+
+<section id="relogio" style="display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:30px;font-weight:700">Relógio — 4 temas × 5 cores</div><div style="font-size:16px;color:#6B6A66">Desenhos originais. No LED clássico os segmentos apagados ficam a 9% para lembrar o display físico.</div></div>
+  <sc-for list="{{ themes }}" as="t" hint-placeholder-count="4">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:12px;align-items:baseline"><span style="font-size:19px;font-weight:600">{{ t.name }}</span><span style="font-size:14px;color:#6B6A66;font-family:ui-monospace,Menlo,monospace">{{ t.id }}</span><span style="font-size:15px;color:#6B6A66">{{ t.desc }}</span></div>
+      <div style="display:grid;grid-template-columns:repeat(5,280px);gap:12px">
+        <sc-for list="{{ t.colors }}" as="c" hint-placeholder-count="5">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="height:130px;background:#000;border-radius:12px;display:flex;align-items:center;justify-content:center"><dc-import name="Clock" theme="{{ t.id }}" color="{{ c.hex }}" time="07:45" fill="true" hint-size="220px,78px" style="width:220px;height:78px"></dc-import></div>
+            <div style="font-size:13px;color:#6B6A66;display:flex;justify-content:space-between"><span>{{ c.name }}</span><span style="font-family:ui-monospace,Menlo,monospace">{{ c.hex }}</span></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:30px;font-weight:700">4 · Modo cabeceira — 3 opções</div><div style="font-size:16px;color:#6B6A66">Paisagem, preto puro. Tema do relógio muda pelo painel de Tweaks. Estados em miniatura abaixo de cada opção.</div></div>
+  <div style="display:flex;gap:72px;flex-wrap:wrap;align-items:flex-start">
+
+    <div id="4a" style="display:flex;flex-direction:column;gap:18px;width:884px">
+      <div style="display:flex;gap:12px;align-items:center"><span style="background:#1C1C1E;color:#fff;font-size:14px;font-weight:600;padding:4px 10px;border-radius:6px">4A</span><span style="font-size:19px;font-weight:600">Centro</span><span style="font-size:15px;color:#6B6A66">relógio centralizado, uma linha discreta embaixo</span></div>
+      <div style="width:866px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:62px"><div style="position:relative;width:844px;height:390px;border-radius:52px;overflow:hidden;background:#000">
+        <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.85" fill="true" hint-size="700px,220px" style="position:absolute;left:72px;top:56px;width:700px;height:230px"></dc-import>
+        <div style="position:absolute;left:0;right:0;bottom:30px;display:flex;justify-content:center;align-items:center;gap:24px;font-size:17px;color:#FF3B30;opacity:.6"><span>Sábado</span><span style="display:flex;align-items:center;gap:6px">{{ ic.alarm }}07:00 amanhã</span></div>
+      </div></div>
+      <div style="display:grid;grid-template-columns:repeat(2,434px);gap:20px 16px">
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:49" seconds="{{ segs }}" dim="1" fill="true" hint-size="350px,115px" style="position:absolute;left:36px;top:28px;width:350px;height:115px"></dc-import>
+          <div style="position:absolute;top:12px;right:16px;font-size:9px;color:rgba(235,235,245,.8);background:rgba(255,255,255,.14);padding:4px 8px;border-radius:5px">Sair</div>
+          <div style="position:absolute;left:0;right:0;bottom:15px;display:flex;justify-content:center;gap:12px;font-size:8.5px;color:#FF3B30;opacity:.75"><span>Sábado</span><span style="display:flex;align-items:center;gap:3px">{{ ic.alarm }}07:00 amanhã</span></div>
+        </div><div style="font-size:13px;color:#6B6A66">Toque: brilho sobe e “Sair” aparece por 5 s</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:02" seconds="{{ segs }}" dim="0.85" fill="true" hint-size="350px,115px" style="position:absolute;left:36px;top:28px;width:350px;height:115px"></dc-import>
+          <div style="position:absolute;left:0;right:0;bottom:15px;display:flex;justify-content:center;gap:12px;font-size:8.5px;color:#FF3B30;opacity:.6"><span>Sábado</span><span style="display:flex;align-items:center;gap:3px">{{ ic.zzz }}Soneca até 07:09</span></div>
+        </div><div style="font-size:13px;color:#6B6A66">Em soneca</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.85" fill="true" hint-size="350px,115px" style="position:absolute;left:36px;top:28px;width:350px;height:115px"></dc-import>
+          <div style="position:absolute;left:0;right:0;bottom:15px;display:flex;justify-content:center;gap:12px;font-size:8.5px;color:#FF3B30;opacity:.6"><span style="display:flex;align-items:center;gap:3px">{{ ic.boltSlash }}O iPhone não está carregando</span></div>
+        </div><div style="font-size:13px;color:#6B6A66">Carregador desconectado</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.85" fill="true" hint-size="350px,115px" style="position:absolute;left:36px;top:28px;width:350px;height:115px"></dc-import>
+          <div style="position:absolute;left:0;right:0;bottom:15px;display:flex;justify-content:center;gap:12px;font-size:8.5px;color:#FF3B30;opacity:.6"><span>Sábado</span><span>Nenhum alarme ativo</span></div>
+        </div><div style="font-size:13px;color:#6B6A66">Sem alarme</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.42" off="0.12" fill="true" hint-size="350px,115px" style="position:absolute;left:36px;top:28px;width:350px;height:115px"></dc-import>
+          <div style="position:absolute;left:0;right:0;bottom:15px;display:flex;justify-content:center;gap:12px;font-size:8.5px;color:#FF3B30;opacity:.35"><span>Sábado</span><span style="display:flex;align-items:center;gap:3px">{{ ic.alarm }}07:00 amanhã</span></div>
+        </div><div style="font-size:13px;color:#6B6A66">Brilho 15%: cor reduzida, sem halo</div></div>
+      </div>
+    </div>
+
+    <div id="4b" style="display:flex;flex-direction:column;gap:18px;width:884px">
+      <div style="display:flex;gap:12px;align-items:center"><span style="background:#1C1C1E;color:#fff;font-size:14px;font-weight:600;padding:4px 10px;border-radius:6px">4B</span><span style="font-size:19px;font-weight:600">Borda a borda</span><span style="font-size:15px;color:#6B6A66">relógio no máximo, informações nos cantos superiores</span></div>
+      <div style="width:866px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:62px"><div style="position:relative;width:844px;height:390px;border-radius:52px;overflow:hidden;background:#000">
+        <div style="position:absolute;top:28px;left:64px;font-size:15px;color:#FF3B30;opacity:.55">Sábado</div>
+        <div style="position:absolute;top:28px;right:64px;font-size:15px;color:#FF3B30;opacity:.55;display:flex;align-items:center;gap:6px">{{ ic.alarm }}07:00 amanhã</div>
+        <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.85" fill="true" hint-size="744px,280px" style="position:absolute;left:50px;top:66px;width:744px;height:284px"></dc-import>
+      </div></div>
+      <div style="display:grid;grid-template-columns:repeat(2,434px);gap:20px 16px">
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <div style="position:absolute;top:14px;left:32px;font-size:7.5px;color:#FF3B30;opacity:.75">Sábado</div><div style="position:absolute;top:14px;right:32px;font-size:7.5px;color:#FF3B30;opacity:.75;display:flex;gap:3px;align-items:center">{{ ic.alarm }}07:00 amanhã</div>
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:49" seconds="{{ segs }}" dim="1" fill="true" hint-size="372px,120px" style="position:absolute;left:25px;top:33px;width:372px;height:120px"></dc-import>
+          <div style="position:absolute;bottom:10px;left:50%;margin-left:-20px;width:40px;text-align:center;font-size:8px;color:rgba(235,235,245,.8);background:rgba(255,255,255,.14);padding:3px 0;border-radius:5px">Sair</div>
+        </div><div style="font-size:13px;color:#6B6A66">Toque: brilho sobe e “Sair” aparece por 5 s</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <div style="position:absolute;top:14px;left:32px;font-size:7.5px;color:#FF3B30;opacity:.55">Sábado</div><div style="position:absolute;top:14px;right:32px;font-size:7.5px;color:#FF3B30;opacity:.55;display:flex;gap:3px;align-items:center">{{ ic.zzz }}Soneca até 07:09</div>
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:02" seconds="{{ segs }}" dim="0.85" fill="true" hint-size="372px,140px" style="position:absolute;left:25px;top:33px;width:372px;height:142px"></dc-import>
+        </div><div style="font-size:13px;color:#6B6A66">Em soneca</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <div style="position:absolute;top:14px;left:32px;font-size:7.5px;color:#FF3B30;opacity:.55">Sábado</div><div style="position:absolute;top:14px;right:32px;font-size:7.5px;color:#FF3B30;opacity:.55;display:flex;gap:3px;align-items:center">{{ ic.alarm }}07:00 amanhã</div>
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.85" fill="true" hint-size="372px,120px" style="position:absolute;left:25px;top:33px;width:372px;height:120px"></dc-import>
+          <div style="position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:3px;font-size:7.5px;color:#FF3B30;opacity:.6">{{ ic.boltSlash }}O iPhone não está carregando</div>
+        </div><div style="font-size:13px;color:#6B6A66">Carregador desconectado</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <div style="position:absolute;top:14px;left:32px;font-size:7.5px;color:#FF3B30;opacity:.55">Sábado</div><div style="position:absolute;top:14px;right:32px;font-size:7.5px;color:#FF3B30;opacity:.55">Nenhum alarme ativo</div>
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.85" fill="true" hint-size="372px,140px" style="position:absolute;left:25px;top:33px;width:372px;height:142px"></dc-import>
+        </div><div style="font-size:13px;color:#6B6A66">Sem alarme</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <div style="position:absolute;top:14px;left:32px;font-size:7.5px;color:#FF3B30;opacity:.32">Sábado</div><div style="position:absolute;top:14px;right:32px;font-size:7.5px;color:#FF3B30;opacity:.32;display:flex;gap:3px;align-items:center">{{ ic.alarm }}07:00 amanhã</div>
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.42" off="0.12" fill="true" hint-size="372px,140px" style="position:absolute;left:25px;top:33px;width:372px;height:142px"></dc-import>
+        </div><div style="font-size:13px;color:#6B6A66">Brilho 15%</div></div>
+      </div>
+    </div>
+
+    <div id="4c" style="display:flex;flex-direction:column;gap:18px;width:884px">
+      <div style="display:flex;gap:12px;align-items:center"><span style="background:#1C1C1E;color:#fff;font-size:14px;font-weight:600;padding:4px 10px;border-radius:6px">4C</span><span style="font-size:19px;font-weight:600">Coluna</span><span style="font-size:15px;color:#6B6A66">relógio à esquerda, informações numa coluna à direita</span></div>
+      <div style="width:866px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:62px"><div style="position:relative;width:844px;height:390px;border-radius:52px;overflow:hidden;background:#000">
+        <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.85" fill="true" align="left" hint-size="560px,230px" style="position:absolute;left:64px;top:80px;width:560px;height:230px"></dc-import>
+        <div style="position:absolute;left:654px;top:96px;bottom:96px;width:1px;background:#FF3B30;opacity:.25"></div>
+        <div style="position:absolute;left:678px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;gap:14px;color:#FF3B30;opacity:.6">
+          <div style="font-size:20px">Sábado</div>
+          <div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;align-items:center;gap:6px;font-size:28px;font-weight:500;font-variant-numeric:tabular-nums">{{ ic.alarm }}07:00</div><div style="font-size:15px">amanhã</div></div>
+        </div>
+      </div></div>
+      <div style="display:grid;grid-template-columns:repeat(2,434px);gap:20px 16px">
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:49" seconds="{{ segs }}" dim="1" fill="true" align="left" hint-size="280px,115px" style="position:absolute;left:32px;top:40px;width:280px;height:115px"></dc-import>
+          <div style="position:absolute;left:327px;top:48px;bottom:48px;width:1px;background:#FF3B30;opacity:.35"></div>
+          <div style="position:absolute;left:339px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;gap:6px;color:#FF3B30;opacity:.8"><div style="font-size:10px">Sábado</div><div style="display:flex;align-items:center;gap:3px;font-size:14px;font-weight:500">{{ ic.alarm }}07:00</div><div style="font-size:7.5px">amanhã</div></div>
+          <div style="position:absolute;right:14px;bottom:12px;font-size:8px;color:rgba(235,235,245,.8);background:rgba(255,255,255,.14);padding:3px 8px;border-radius:5px">Sair</div>
+        </div><div style="font-size:13px;color:#6B6A66">Toque: brilho sobe e “Sair” aparece por 5 s</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:02" seconds="{{ segs }}" dim="0.85" fill="true" align="left" hint-size="280px,115px" style="position:absolute;left:32px;top:40px;width:280px;height:115px"></dc-import>
+          <div style="position:absolute;left:327px;top:48px;bottom:48px;width:1px;background:#FF3B30;opacity:.25"></div>
+          <div style="position:absolute;left:339px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;gap:6px;color:#FF3B30;opacity:.6"><div style="font-size:10px">Sábado</div><div style="display:flex;align-items:center;gap:3px;font-size:7.5px">{{ ic.zzz }}Soneca até</div><div style="font-size:14px;font-weight:500">07:09</div></div>
+        </div><div style="font-size:13px;color:#6B6A66">Em soneca</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.85" fill="true" align="left" hint-size="280px,115px" style="position:absolute;left:32px;top:40px;width:280px;height:115px"></dc-import>
+          <div style="position:absolute;left:327px;top:48px;bottom:48px;width:1px;background:#FF3B30;opacity:.25"></div>
+          <div style="position:absolute;left:339px;right:16px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;gap:6px;color:#FF3B30;opacity:.6"><div style="font-size:10px">Sábado</div><div style="display:flex;align-items:center;gap:3px;font-size:14px;font-weight:500">{{ ic.alarm }}07:00</div><div style="display:flex;gap:3px;font-size:7.5px;line-height:1.3">{{ ic.boltSlash }}O iPhone não está carregando</div></div>
+        </div><div style="font-size:13px;color:#6B6A66">Carregador desconectado</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.85" fill="true" align="left" hint-size="280px,115px" style="position:absolute;left:32px;top:40px;width:280px;height:115px"></dc-import>
+          <div style="position:absolute;left:327px;top:48px;bottom:48px;width:1px;background:#FF3B30;opacity:.25"></div>
+          <div style="position:absolute;left:339px;right:16px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;gap:6px;color:#FF3B30;opacity:.6"><div style="font-size:10px">Sábado</div><div style="font-size:7.5px;line-height:1.3">Nenhum alarme ativo</div></div>
+        </div><div style="font-size:13px;color:#6B6A66">Sem alarme</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="position:relative;width:422px;height:195px;border-radius:28px;overflow:hidden;background:#000;border:6px solid #1A1A1C">
+          <dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" dim="0.42" off="0.12" fill="true" align="left" hint-size="280px,115px" style="position:absolute;left:32px;top:40px;width:280px;height:115px"></dc-import>
+          <div style="position:absolute;left:327px;top:48px;bottom:48px;width:1px;background:#FF3B30;opacity:.15"></div>
+          <div style="position:absolute;left:339px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;gap:6px;color:#FF3B30;opacity:.35"><div style="font-size:10px">Sábado</div><div style="display:flex;align-items:center;gap:3px;font-size:14px;font-weight:500">{{ ic.alarm }}07:00</div><div style="font-size:7.5px">amanhã</div></div>
+        </div><div style="font-size:13px;color:#6B6A66">Brilho 15%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:30px;font-weight:700">5 · Alarme tocando — 3 opções</div><div style="font-size:16px;color:#6B6A66">Soneca ocupa 57% da altura útil, Parar 26%. Sem soneca: Parar com 60%, embaixo, perto do polegar.</div></div>
+  <div style="display:flex;gap:72px;flex-wrap:wrap;align-items:flex-start">
+
+    <div id="5a" style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;gap:12px;align-items:center"><span style="background:#1C1C1E;color:#fff;font-size:14px;font-weight:600;padding:4px 10px;border-radius:6px">5A</span><span style="font-size:19px;font-weight:600">Blocos</span><span style="font-size:15px;color:#6B6A66">Soneca cheia na cor do relógio, Parar em cinza escuro</span></div>
+      <div style="display:flex;gap:24px;align-items:flex-start">
+        <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px;flex:none"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#000;color:#fff">
+          <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-size:17px;font-weight:600"><span>07:00</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+          <div style="position:absolute;top:59px;bottom:34px;left:16px;right:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="height:100px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px"><dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:00" fill="true" hint-size="220px,58px" style="width:220px;height:58px"></dc-import><div style="font-size:20px;color:rgba(235,235,245,.6)">Trabalho</div></div>
+            <div style="height:430px;flex:none;border-radius:32px;background:#FF3B30;color:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px"><div style="font-size:56px">{{ ic.zzz }}</div><div style="font-size:64px;font-weight:700;letter-spacing:-.5px">Soneca</div></div>
+            <div style="height:197px;flex:none;border-radius:32px;background:#1C1C1E;color:#FF3B30;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:700">Parar</div>
+          </div>
+          <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff;opacity:.6"></div>
+        </div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="width:207px;height:433px;box-sizing:border-box;border:6px solid #1A1A1C;border-radius:34px;overflow:hidden;background:#000;position:relative">
+          <div style="position:absolute;top:30px;bottom:17px;left:8px;right:8px;display:flex;flex-direction:column;gap:6px">
+            <div style="height:50px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:00" fill="true" hint-size="110px,29px" style="width:110px;height:29px"></dc-import><div style="font-size:10px;color:rgba(235,235,245,.6)">Alarme</div></div>
+            <div style="flex:1"></div>
+            <div style="height:225px;flex:none;border-radius:16px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700">Parar</div>
+          </div>
+        </div><div style="font-size:13px;color:#6B6A66;width:200px">Sem soneca, sem rótulo</div></div>
+      </div>
+      <div style="width:866px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:62px"><div style="position:relative;width:844px;height:390px;border-radius:52px;overflow:hidden;background:#000;color:#fff">
+        <div style="position:absolute;top:12px;bottom:21px;left:59px;right:59px;display:flex;flex-direction:column;gap:8px">
+          <div style="height:44px;flex:none;display:flex;align-items:center;justify-content:center;gap:16px"><dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:00" fill="true" hint-size="120px,32px" style="width:120px;height:32px"></dc-import><div style="font-size:18px;color:rgba(235,235,245,.6)">Trabalho</div></div>
+          <div style="height:200px;flex:none;border-radius:28px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;gap:18px"><div style="font-size:48px">{{ ic.zzz }}</div><div style="font-size:60px;font-weight:700">Soneca</div></div>
+          <div style="height:97px;flex:none;border-radius:24px;background:#1C1C1E;color:#FF3B30;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700">Parar</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div id="5b" style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;gap:12px;align-items:center"><span style="background:#1C1C1E;color:#fff;font-size:14px;font-weight:600;padding:4px 10px;border-radius:6px">5B</span><span style="font-size:19px;font-weight:600">Tinta</span><span style="font-size:15px;color:#6B6A66">Soneca em cor diluída com texto forte; Parar é o único bloco cheio</span></div>
+      <div style="display:flex;gap:24px;align-items:flex-start">
+        <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px;flex:none"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#000;color:#fff">
+          <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-size:17px;font-weight:600"><span>07:00</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+          <div style="position:absolute;top:59px;bottom:34px;left:16px;right:16px;display:flex;flex-direction:column;gap:12px">
+            <div style="height:100px;flex:none;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:0 8px"><dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:00" fill="true" align="left" hint-size="200px,56px" style="width:200px;height:56px"></dc-import><div style="font-size:20px;color:rgba(235,235,245,.6)">Trabalho</div></div>
+            <div style="height:430px;flex:none;border-radius:24px;background:rgba(255,59,48,.2);color:#FF3B30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px"><div style="font-size:56px">{{ ic.zzz }}</div><div style="font-size:68px;font-weight:700;letter-spacing:-.5px">Soneca</div></div>
+            <div style="height:197px;flex:none;border-radius:24px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:700">Parar</div>
+          </div>
+          <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff;opacity:.6"></div>
+        </div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="width:207px;height:433px;box-sizing:border-box;border:6px solid #1A1A1C;border-radius:34px;overflow:hidden;background:#000;position:relative">
+          <div style="position:absolute;top:30px;bottom:17px;left:8px;right:8px;display:flex;flex-direction:column;gap:6px">
+            <div style="height:50px;flex:none;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:0 4px"><dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:00" fill="true" align="left" hint-size="100px,28px" style="width:100px;height:28px"></dc-import><div style="font-size:10px;color:rgba(235,235,245,.6)">Alarme</div></div>
+            <div style="flex:1"></div>
+            <div style="height:225px;flex:none;border-radius:12px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700">Parar</div>
+          </div>
+        </div><div style="font-size:13px;color:#6B6A66;width:200px">Sem soneca, sem rótulo</div></div>
+      </div>
+      <div style="width:866px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:62px"><div style="position:relative;width:844px;height:390px;border-radius:52px;overflow:hidden;background:#000;color:#fff">
+        <div style="position:absolute;top:12px;bottom:21px;left:59px;right:59px;display:flex;flex-direction:column;gap:8px">
+          <div style="height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 8px"><dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:00" fill="true" align="left" hint-size="120px,32px" style="width:120px;height:32px"></dc-import><div style="font-size:18px;color:rgba(235,235,245,.6)">Trabalho</div></div>
+          <div style="height:200px;flex:none;border-radius:22px;background:rgba(255,59,48,.2);color:#FF3B30;display:flex;align-items:center;justify-content:center;gap:18px"><div style="font-size:48px">{{ ic.zzz }}</div><div style="font-size:64px;font-weight:700">Soneca</div></div>
+          <div style="height:97px;flex:none;border-radius:22px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700">Parar</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div id="5c" style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;gap:12px;align-items:center"><span style="background:#1C1C1E;color:#fff;font-size:14px;font-weight:600;padding:4px 10px;border-radius:6px">5C</span><span style="font-size:19px;font-weight:600">Tela inteira</span><span style="font-size:15px;color:#6B6A66">sem margens: a tela vira os dois botões</span></div>
+      <div style="display:flex;gap:24px;align-items:flex-start">
+        <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px;flex:none"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#000;color:#fff">
+          <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-size:17px;font-weight:600"><span>07:00</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+          <div style="position:absolute;top:59px;left:0;right:0;height:108px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px"><dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:00" fill="true" hint-size="220px,58px" style="width:220px;height:58px"></dc-import><div style="font-size:20px;color:rgba(235,235,245,.6)">Trabalho</div></div>
+          <div style="position:absolute;top:170px;left:0;right:0;height:436px;background:#FF3B30;color:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px"><div style="font-size:60px">{{ ic.zzz }}</div><div style="font-size:76px;font-weight:800;letter-spacing:-1px">Soneca</div></div>
+          <div style="position:absolute;top:609px;left:0;right:0;bottom:0;background:#161616;color:#FF3B30;display:flex;align-items:center;justify-content:center;padding-bottom:34px;box-sizing:border-box;font-size:52px;font-weight:700">Parar</div>
+          <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff;opacity:.6"></div>
+        </div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="width:207px;height:433px;box-sizing:border-box;border:6px solid #1A1A1C;border-radius:34px;overflow:hidden;background:#000;position:relative">
+          <div style="position:absolute;top:30px;left:0;right:0;height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:00" fill="true" hint-size="110px,29px" style="width:110px;height:29px"></dc-import><div style="font-size:10px;color:rgba(235,235,245,.6)">Alarme</div></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:250px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;padding-bottom:17px;box-sizing:border-box;font-size:34px;font-weight:800">Parar</div>
+        </div><div style="font-size:13px;color:#6B6A66;width:200px">Sem soneca, sem rótulo</div></div>
+      </div>
+      <div style="width:866px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:62px"><div style="position:relative;width:844px;height:390px;border-radius:52px;overflow:hidden;background:#000;color:#fff">
+        <div style="position:absolute;top:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:center;gap:16px"><dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="07:00" fill="true" hint-size="110px,30px" style="width:110px;height:30px"></dc-import><div style="font-size:18px;color:rgba(235,235,245,.6)">Trabalho</div></div>
+        <div style="position:absolute;top:52px;left:0;right:0;height:210px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;gap:18px"><div style="font-size:52px">{{ ic.zzz }}</div><div style="font-size:68px;font-weight:800">Soneca</div></div>
+        <div style="position:absolute;top:265px;left:0;right:0;bottom:0;background:#161616;color:#FF3B30;display:flex;align-items:center;justify-content:center;padding-bottom:21px;box-sizing:border-box;font-size:42px;font-weight:700">Parar</div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section id="telas" style="display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:30px;font-weight:700">Telas de retrato — na ordem do fluxo</div><div style="font-size:16px;color:#6B6A66">iOS em modo escuro permanente. Tint = cor do relógio. Lista inset grouped, títulos grandes, controles nativos.</div></div>
+  <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#000;color:#fff">
+        <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-size:17px;font-weight:600"><span>9:41</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+        <div style="position:absolute;top:54px;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;color:#FF3B30;font-size:24px">{{ ic.gear }}{{ ic.plus }}</div>
+        <div style="position:absolute;top:100px;left:16px;font-size:34px;font-weight:700">Alarmes</div>
+        <div style="position:absolute;top:300px;left:32px;right:32px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center"><div style="font-size:52px;color:rgba(235,235,245,.3)">{{ ic.alarm }}</div><div style="font-size:22px;font-weight:700;margin-top:6px">Nenhum alarme</div><div style="font-size:17px;color:rgba(235,235,245,.6)">Toque em + para criar o primeiro.</div></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:12px 16px 42px"><div style="height:56px;border-radius:14px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;gap:8px;font-size:17px;font-weight:600">{{ ic.moon }}Dormir</div></div>
+        <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+      </div></div>
+      <div style="font-size:14px;color:#6B6A66">1 · Alarmes — primeira abertura (vazio)</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#000;color:#fff">
+        <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-size:17px;font-weight:600"><span>9:41</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+        <div style="position:absolute;top:50px;left:18px;right:18px;height:40px;border-radius:12px 12px 0 0;background:#121214"></div>
+        <div style="position:absolute;top:60px;left:0;right:0;bottom:0;border-radius:12px 12px 0 0;background:#1C1C1E">
+          <div style="height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:17px;color:#FF3B30"><span>Cancelar</span><span style="font-weight:600">Salvar</span></div>
+          <div style="position:relative;height:200px;display:flex;justify-content:center;gap:48px;align-items:center;font-size:30px;font-variant-numeric:tabular-nums">
+            <div style="position:absolute;left:16px;right:16px;top:80px;height:40px;border-radius:8px;background:rgba(118,118,128,.24)"></div>
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:6px"><span style="opacity:.25;font-size:24px">04</span><span style="opacity:.5;font-size:27px">05</span><span style="font-size:32px">06</span><span style="opacity:.5;font-size:27px">07</span><span style="opacity:.25;font-size:24px">08</span></div>
+            <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:6px"><span style="opacity:.25;font-size:24px">28</span><span style="opacity:.5;font-size:27px">29</span><span style="font-size:32px">30</span><span style="opacity:.5;font-size:27px">31</span><span style="opacity:.25;font-size:24px">32</span></div>
+          </div>
+          <div style="padding:18px 32px 7px;font-size:13px;color:rgba(235,235,245,.6)">Repetir</div>
+          <div style="margin:0 16px;background:#2C2C2E;border-radius:10px">
+            <div style="display:flex;justify-content:space-between;padding:12px 14px">
+              <div style="width:38px;height:38px;border-radius:50%;background:#3A3A3C;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">D</div>
+              <div style="width:38px;height:38px;border-radius:50%;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">S</div>
+              <div style="width:38px;height:38px;border-radius:50%;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">T</div>
+              <div style="width:38px;height:38px;border-radius:50%;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Q</div>
+              <div style="width:38px;height:38px;border-radius:50%;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">Q</div>
+              <div style="width:38px;height:38px;border-radius:50%;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">S</div>
+              <div style="width:38px;height:38px;border-radius:50%;background:#3A3A3C;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600">S</div>
+            </div>
+            <div style="display:flex;gap:28px;padding:11px 16px;border-top:0.5px solid rgba(84,84,88,.65);margin-left:16px;padding-left:0;font-size:17px;color:#FF3B30"><span>Dias úteis</span><span>Todos os dias</span></div>
+          </div>
+          <div style="margin:28px 16px 0;background:#2C2C2E;border-radius:10px;font-size:17px">
+            <div style="display:flex;justify-content:space-between;padding:11px 16px"><span>Rótulo</span><span style="color:rgba(235,235,245,.6)">Trabalho</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 16px 11px 0;margin-left:16px;border-top:0.5px solid rgba(84,84,88,.65)"><span>Som</span><span style="display:flex;align-items:center;gap:6px;color:rgba(235,235,245,.6)">Bipe digital<span style="font-size:14px;color:rgba(235,235,245,.3)">{{ ic.chevR }}</span></span></div>
+          </div>
+          <div style="padding:22px 32px 7px;font-size:13px;color:rgba(235,235,245,.6)">Soneca</div>
+          <div style="margin:0 16px;background:#2C2C2E;border-radius:10px;font-size:17px">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 16px"><span>Soneca</span><div style="width:51px;height:31px;border-radius:16px;background:#FF3B30;display:flex;justify-content:flex-end;padding:2px;box-sizing:border-box"><div style="width:27px;height:27px;border-radius:50%;background:#fff"></div></div></div>
+            <div style="padding:8px 16px 10px 0;margin-left:16px;border-top:0.5px solid rgba(84,84,88,.65)"><div style="display:grid;grid-template-columns:repeat(4,1fr);height:32px;border-radius:9px;background:rgba(118,118,128,.24);padding:2px;box-sizing:border-box;font-size:13px;font-weight:500">
+              <div style="display:flex;align-items:center;justify-content:center">5 min</div><div style="display:flex;align-items:center;justify-content:center;background:#636366;border-radius:7px;font-weight:600">9 min</div><div style="display:flex;align-items:center;justify-content:center">10 min</div><div style="display:flex;align-items:center;justify-content:center">15 min</div>
+            </div></div>
+          </div>
+          <div style="margin:28px 16px 0;background:#2C2C2E;border-radius:10px;padding:11px 16px;text-align:center;font-size:17px;color:#FF453A">Excluir alarme</div>
+        </div>
+        <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+      </div></div>
+      <div style="font-size:14px;color:#6B6A66;max-width:400px">2 · Editar alarme (sheet, detent large). Ao criar, sem “Excluir alarme”.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#000;color:#fff">
+        <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-size:17px;font-weight:600"><span>9:41</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+        <div style="position:absolute;top:100px;left:16px;font-size:34px;font-weight:700;opacity:.35">Alarmes</div>
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,.55)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:420px;border-radius:12px 12px 0 0;background:#1C1C1E;display:flex;flex-direction:column;align-items:center;padding:0 28px 42px;box-sizing:border-box">
+          <div style="width:36px;height:5px;border-radius:3px;background:#5A5A5E;margin-top:6px"></div>
+          <div style="font-size:60px;color:#FF3B30;margin-top:44px">{{ ic.alarmSlash }}</div>
+          <div style="font-size:22px;font-weight:700;margin-top:18px">Alarmes desligados</div>
+          <div style="font-size:17px;line-height:1.35;color:rgba(235,235,245,.6);text-align:center;margin-top:10px;text-wrap:pretty">Para o Mais 5 Minutinhos tocar mesmo no silencioso, permita alarmes nos Ajustes do iPhone.</div>
+          <div style="flex:1"></div>
+          <div style="align-self:stretch;height:50px;border-radius:14px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Abrir Ajustes</div>
+        </div>
+        <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+      </div></div>
+      <div style="font-size:14px;color:#6B6A66;max-width:400px">8 · Permissão de alarme negada (sheet, detent medium)</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#000;color:#fff">
+        <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-size:17px;font-weight:600"><span>9:41</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+        <div style="position:absolute;top:54px;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;color:#FF3B30;font-size:24px">{{ ic.gear }}{{ ic.plus }}</div>
+        <div style="position:absolute;top:100px;left:16px;font-size:34px;font-weight:700">Alarmes</div>
+        <div style="position:absolute;top:158px;left:16px;right:16px;background:#1C1C1E;border-radius:10px;overflow:hidden">
+          <sc-for list="{{ alarms }}" as="a" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:12px;padding:6px 16px 10px 0;margin-left:16px;border-bottom:0.5px solid rgba(84,84,88,.65)">
+              <div style="flex:1;min-width:0"><div style="font-size:48px;font-weight:300;line-height:1.1;font-variant-numeric:tabular-nums;color:{{ a.tc }}">{{ a.t }}</div><div style="font-size:15px;color:rgba(235,235,245,.6)">{{ a.sub }}</div></div>
+              <div style="width:51px;height:31px;border-radius:16px;background:{{ a.track }};display:flex;justify-content:{{ a.jc }};padding:2px;box-sizing:border-box;flex:none"><div style="width:27px;height:27px;border-radius:50%;background:#fff"></div></div>
+            </div>
+          </sc-for>
+          <div style="display:flex;width:358px">
+            <div style="flex:none;width:358px;margin-left:-84px;display:flex;align-items:center;gap:12px;padding:6px 16px 10px;box-sizing:border-box">
+              <div style="flex:1;min-width:0"><div style="font-size:48px;font-weight:300;line-height:1.1;font-variant-numeric:tabular-nums">08:00</div><div style="font-size:15px;color:rgba(235,235,245,.6)">Uma vez</div></div>
+              <div style="width:51px;height:31px;border-radius:16px;background:#FF3B30;display:flex;justify-content:flex-end;padding:2px;box-sizing:border-box;flex:none"><div style="width:27px;height:27px;border-radius:50%;background:#fff"></div></div>
+            </div>
+            <div style="flex:none;width:84px;background:#FF453A;display:flex;align-items:center;justify-content:center;font-size:24px">{{ ic.trash }}</div>
+          </div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:12px 16px 42px"><div style="height:56px;border-radius:14px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;gap:8px;font-size:17px;font-weight:600">{{ ic.moon }}Dormir</div></div>
+        <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+      </div></div>
+      <div style="font-size:14px;color:#6B6A66;max-width:400px">1 · Alarmes — lista. Desligado com hora esmaecida; última linha mostra o swipe para excluir.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#000;color:#fff">
+        <div style="position:absolute;top:98px;left:16px;right:16px;bottom:102px;overflow:hidden"><div style="position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column">
+          <div style="background:#1C1C1E;border-radius:10px;overflow:hidden">
+            <sc-for list="{{ ten }}" as="a" hint-placeholder-count="10">
+              <div style="display:flex;align-items:center;gap:12px;padding:6px 16px 8px 0;margin-left:16px;border-bottom:0.5px solid rgba(84,84,88,.65)">
+                <div style="flex:1;min-width:0"><div style="font-size:38px;font-weight:300;line-height:1.1;font-variant-numeric:tabular-nums;color:{{ a.tc }}">{{ a.t }}</div><div style="font-size:15px;color:rgba(235,235,245,.6)">{{ a.sub }}</div></div>
+                <div style="width:51px;height:31px;border-radius:16px;background:{{ a.track }};display:flex;justify-content:{{ a.jc }};padding:2px;box-sizing:border-box;flex:none"><div style="width:27px;height:27px;border-radius:50%;background:#fff"></div></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:8px 16px 12px;font-size:13px;line-height:1.35;color:rgba(235,235,245,.6)">Você chegou a 10 alarmes. Apague um para criar outro.</div>
+        </div></div>
+        <div style="position:absolute;top:0;left:0;right:0;height:98px;background:rgba(18,18,20,.94);border-bottom:0.5px solid rgba(84,84,88,.65)"></div>
+        <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-size:17px;font-weight:600"><span>9:41</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+        <div style="position:absolute;top:54px;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:24px"><span style="color:#FF3B30">{{ ic.gear }}</span><span style="font-size:17px;font-weight:600">Alarmes</span><span style="color:rgba(235,235,245,.3)">{{ ic.plus }}</span></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:12px 16px 42px;background:rgba(0,0,0,.92)"><div style="height:56px;border-radius:14px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;gap:8px;font-size:17px;font-weight:600">{{ ic.moon }}Dormir</div></div>
+        <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+      </div></div>
+      <div style="font-size:14px;color:#6B6A66;max-width:400px">1 · Alarmes — limite de 10, rolado até o fim. + desabilitado.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#000;color:#fff">
+        <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-size:17px;font-weight:600"><span>9:41</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+        <div style="position:absolute;top:54px;left:0;right:0;height:44px;display:flex;align-items:center;padding:0 10px;font-size:17px"><span style="color:#FF3B30;font-size:22px;width:60px">{{ ic.chevL }}</span><span style="flex:1;text-align:center;font-weight:600;margin-right:60px">Som</span></div>
+        <div style="position:absolute;top:120px;left:16px;right:16px;font-size:17px">
+          <div style="background:#1C1C1E;border-radius:10px;padding:11px 16px">Padrão do iPhone</div>
+          <div style="padding:7px 16px 0;font-size:13px;color:rgba(235,235,245,.6)">Som de alarme do próprio iPhone</div>
+          <div style="margin-top:28px;background:#1C1C1E;border-radius:10px;overflow:hidden">
+            <sc-for list="{{ sounds }}" as="s" hint-placeholder-count="7">
+              <div style="display:flex;align-items:center;gap:10px;padding:11px 16px 11px 0;margin-left:16px;border-bottom:0.5px solid rgba(84,84,88,.65)">
+                <span style="flex:1">{{ s.name }}</span>
+                <sc-if value="{{ s.playing }}" hint-placeholder-val="{{ false }}"><span style="color:#FF3B30;font-size:20px">{{ ic.speaker }}</span></sc-if>
+                <sc-if value="{{ s.sel }}" hint-placeholder-val="{{ false }}"><span style="color:#FF3B30;font-size:18px">{{ ic.check }}</span></sc-if>
+                <sc-if value="{{ s.locked }}" hint-placeholder-val="{{ false }}"><span style="color:rgba(235,235,245,.3);font-size:16px">{{ ic.lock }}</span></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+      </div></div>
+      <div style="font-size:14px;color:#6B6A66;max-width:400px">3 · Escolher som (push). Bipe digital selecionado e tocando a prévia; pagos com cadeado.</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px"><div style="position:relative;width:390px;height:1290px;border-radius:55px;overflow:hidden;background:#000;color:#fff;font-size:17px">
+        <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-weight:600"><span>9:41</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+        <div style="position:absolute;top:54px;left:0;right:0;height:44px;display:flex;align-items:center;gap:4px;padding:0 10px;color:#FF3B30"><span style="font-size:22px">{{ ic.chevL }}</span>Alarmes</div>
+        <div style="position:absolute;top:100px;left:0;right:0;display:flex;flex-direction:column">
+          <div style="padding:0 16px 14px;font-size:34px;font-weight:700">Ajustes</div>
+          <div style="margin:0 16px;height:150px;background:#000;border:1px solid #38383A;border-radius:12px;display:flex;align-items:center;justify-content:center"><dc-import name="Clock" theme="{{ tema }}" color="#FF3B30" time="23:48" seconds="{{ segs }}" fill="true" hint-size="280px,90px" style="width:290px;height:92px"></dc-import></div>
+          <div style="padding:24px 32px 7px;font-size:13px;color:rgba(235,235,245,.6)">Relógio</div>
+          <div style="margin:0 16px;background:#1C1C1E;border-radius:10px">
+            <div style="padding:11px 16px 14px"><div>Tema</div>
+              <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px">
+                <sc-for list="{{ setThemes }}" as="t" hint-placeholder-count="4">
+                  <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+                    <div style="position:relative;width:100%;height:50px;box-sizing:border-box;background:#000;border-radius:8px;border:{{ t.border }};display:flex;align-items:center;justify-content:center"><dc-import name="Clock" theme="{{ t.id }}" color="#FF3B30" time="07:45" fill="true" hint-size="54px,22px" style="width:56px;height:22px"></dc-import>
+                      <sc-if value="{{ t.locked }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:4px;right:4px;font-size:11px;color:rgba(235,235,245,.6)">{{ ic.lock }}</span></sc-if>
+                    </div>
+                    <div style="font-size:12px;color:rgba(235,235,245,.6);text-align:center">{{ t.name }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="padding:11px 16px 14px 0;margin-left:16px;border-top:0.5px solid rgba(84,84,88,.65)"><div>Cor</div>
+              <div style="display:flex;justify-content:space-between;margin-top:12px;padding-right:4px">
+                <sc-for list="{{ setColors }}" as="c" hint-placeholder-count="5">
+                  <div style="width:44px;height:44px;border-radius:50%;box-sizing:border-box;border:2px solid {{ c.ring }};padding:3px"><div style="width:100%;height:100%;border-radius:50%;background:{{ c.hex }};display:flex;align-items:center;justify-content:center;color:#000;font-size:14px"><sc-if value="{{ c.locked }}" hint-placeholder-val="{{ false }}">{{ ic.lock }}</sc-if></div></div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 16px 7px 0;margin-left:16px;border-top:0.5px solid rgba(84,84,88,.65)"><span>Formato 24 horas</span><div style="width:51px;height:31px;border-radius:16px;background:#FF3B30;display:flex;justify-content:flex-end;padding:2px;box-sizing:border-box"><div style="width:27px;height:27px;border-radius:50%;background:#fff"></div></div></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 16px 7px 0;margin-left:16px;border-top:0.5px solid rgba(84,84,88,.65)"><span>Mostrar segundos</span><div style="width:51px;height:31px;border-radius:16px;background:#39393D;display:flex;justify-content:flex-start;padding:2px;box-sizing:border-box"><div style="width:27px;height:27px;border-radius:50%;background:#fff"></div></div></div>
+          </div>
+          <div style="padding:24px 32px 7px;font-size:13px;color:rgba(235,235,245,.6)">Cabeceira</div>
+          <div style="margin:0 16px;background:#1C1C1E;border-radius:10px">
+            <div style="padding:11px 16px 14px"><div>Brilho</div>
+              <div style="display:flex;align-items:center;gap:12px;margin-top:12px;color:rgba(235,235,245,.6)"><span style="font-size:18px">{{ ic.sunMin }}</span><div style="flex:1;position:relative;height:4px;border-radius:2px;background:#3A3A3C"><div style="position:absolute;left:0;top:0;bottom:0;width:30%;border-radius:2px;background:#FF3B30"></div><div style="position:absolute;left:30%;top:-12px;margin-left:-14px;width:28px;height:28px;border-radius:50%;background:#fff"></div></div><span style="font-size:22px">{{ ic.sunMax }}</span></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 16px 7px 0;margin-left:16px;border-top:0.5px solid rgba(84,84,88,.65)"><span>Entrar automaticamente</span><div style="width:51px;height:31px;border-radius:16px;background:#FF3B30;display:flex;justify-content:flex-end;padding:2px;box-sizing:border-box"><div style="width:27px;height:27px;border-radius:50%;background:#fff"></div></div></div>
+          </div>
+          <div style="padding:7px 32px 0;font-size:13px;line-height:1.35;color:rgba(235,235,245,.6)">Ao deitar o iPhone no carregador com um alarme ativo</div>
+          <div style="padding:24px 32px 7px;font-size:13px;color:rgba(235,235,245,.6)">Mais 5 Minutinhos completo</div>
+          <div style="margin:0 16px;background:#1C1C1E;border-radius:10px">
+            <div style="display:flex;justify-content:space-between;padding:11px 16px"><span style="color:#FF3B30">Comprar</span><span style="color:rgba(235,235,245,.6)">R$ 19,90</span></div>
+            <div style="padding:11px 16px 11px 0;margin-left:16px;border-top:0.5px solid rgba(84,84,88,.65);color:#FF3B30">Restaurar compra</div>
+          </div>
+          <div style="padding:24px 32px 7px;font-size:13px;color:rgba(235,235,245,.6)">Sobre</div>
+          <div style="margin:0 16px;background:#1C1C1E;border-radius:10px">
+            <div style="padding:10px 16px"><div>Privacidade</div><div style="font-size:15px;color:rgba(235,235,245,.6);margin-top:2px">Nenhum dado sai do seu iPhone</div></div>
+            <div style="display:flex;justify-content:space-between;padding:11px 16px 11px 0;margin-left:16px;border-top:0.5px solid rgba(84,84,88,.65)"><span>Versão</span><span style="color:rgba(235,235,245,.6)">[placeholder: versão]</span></div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+      </div></div>
+      <div style="display:flex;flex-direction:column;gap:10px;max-width:400px">
+        <div style="font-size:14px;color:#6B6A66">6 · Ajustes (push, rolagem completa). Gratuitos assumidos: LED clássico e vermelho.</div>
+        <div style="background:#1C1C1E;border-radius:10px;padding:11px 16px;display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:17px;width:358px"><span>Comprado</span><span style="color:#FF3B30;font-size:18px">{{ ic.check }}</span></div>
+        <div style="font-size:13px;color:#6B6A66">Estado após a compra: a seção vira uma linha só.</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#000;color:#fff">
+        <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 52px;box-sizing:border-box;font-size:17px;font-weight:600"><span>9:41</span>{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+        <div style="position:absolute;top:50px;left:18px;right:18px;height:40px;border-radius:12px 12px 0 0;background:#121214"></div>
+        <div style="position:absolute;top:60px;left:0;right:0;bottom:0;border-radius:12px 12px 0 0;background:#1C1C1E;padding:0 24px;box-sizing:border-box;display:flex;flex-direction:column">
+          <div style="align-self:flex-end;margin:14px -8px 0 0;width:30px;height:30px;border-radius:50%;background:#3A3A3C;display:flex;align-items:center;justify-content:center;font-size:13px;color:rgba(235,235,245,.6)">{{ ic.xmark }}</div>
+          <div style="font-size:28px;font-weight:700;margin-top:8px">Mais 5 Minutinhos completo</div>
+          <div style="font-size:17px;line-height:1.35;color:rgba(235,235,245,.6);margin-top:8px;text-wrap:pretty">Todos os temas, cores e sons. Pague uma vez, use para sempre.</div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:22px">
+            <sc-for list="{{ payThemes }}" as="t" hint-placeholder-count="4">
+              <div style="height:56px;background:#000;border-radius:8px;display:flex;align-items:center;justify-content:center"><dc-import name="Clock" theme="{{ t.id }}" color="{{ t.hex }}" time="07:45" fill="true" hint-size="62px,24px" style="width:64px;height:24px"></dc-import></div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:10px;justify-content:space-between">
+            <sc-for list="{{ colors }}" as="c" hint-placeholder-count="5"><div style="flex:1;height:6px;border-radius:3px;background:{{ c.hex }}"></div></sc-for>
+          </div>
+          <div style="margin-top:22px;background:#2C2C2E;border-radius:10px;font-size:17px">
+            <sc-for list="{{ paidSounds }}" as="s" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:12px;padding:0 16px;height:40px;border-bottom:0.5px solid rgba(84,84,88,.65)"><span style="color:#FF3B30;font-size:17px">{{ ic.speaker }}</span>{{ s }}</div>
+            </sc-for>
+          </div>
+          <div style="flex:1"></div>
+          <div style="height:52px;border-radius:14px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Comprar por R$ 19,90</div>
+          <div style="text-align:center;color:#FF3B30;font-size:15px;padding:14px 0 42px">Restaurar compra</div>
+        </div>
+        <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+      </div></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:14px;color:#6B6A66">7 · Paywall (sheet, detent large)</div>
+        <div style="width:412px;padding:0 11px 11px;box-sizing:border-box;background:#1A1A1C;border-radius:0 0 66px 66px"><div style="position:relative;width:390px;height:230px;border-radius:0 0 55px 55px;overflow:hidden;background:#1C1C1E;color:#fff;padding:0 24px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:flex-end">
+          <div style="font-size:15px;line-height:1.35;color:rgba(235,235,245,.6);text-align:center;margin-bottom:14px">Sem conexão. Tente de novo quando estiver online.</div>
+          <div style="height:52px;border-radius:14px;background:#3A3A3C;color:rgba(235,235,245,.3);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Comprar por R$ 19,90</div>
+          <div style="text-align:center;color:rgba(235,235,245,.3);font-size:15px;padding:14px 0 42px">Restaurar compra</div>
+          <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+        </div></div>
+        <div style="font-size:13px;color:#6B6A66">Estado sem rede (base do mesmo sheet)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sistema" style="display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:30px;font-weight:700">9 · Apresentação do sistema</div><div style="font-size:16px;color:#6B6A66">Layout da Apple, aproximado. Proposta: cor do relógio nos botões e ícones, SF Symbols alarm e zzz.</div></div>
+  <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#0C0C0E;color:#fff">
+        <div style="position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;justify-content:flex-end;padding:4px 30px 0 52px;box-sizing:border-box">{{ ic.status }}</div><div style="position:absolute;top:11px;left:133px;width:124px;height:36px;border-radius:18px;background:#000"></div>
+        <div style="position:absolute;top:84px;left:0;right:0;text-align:center;font-size:20px;font-weight:600;color:rgba(255,255,255,.75)">sábado, 26 de setembro</div>
+        <div style="position:absolute;top:108px;left:0;right:0;text-align:center;font-size:104px;font-weight:700;letter-spacing:-2px;font-variant-numeric:tabular-nums">07:00</div>
+        <div style="position:absolute;left:14px;right:14px;bottom:130px;border-radius:28px;background:#232325;padding:18px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="color:#FF3B30;font-size:22px">{{ ic.alarm }}</span><span style="font-size:17px;font-weight:600;flex:1">Trabalho</span><span style="font-size:15px;color:rgba(235,235,245,.6)">07:00</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="height:54px;border-radius:27px;background:rgba(255,59,48,.22);color:#FF3B30;display:flex;align-items:center;justify-content:center;gap:8px;font-size:17px;font-weight:600">{{ ic.zzz }}Soneca</div>
+            <div style="height:54px;border-radius:27px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Parar</div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+      </div></div>
+      <div style="font-size:14px;color:#6B6A66">Tela bloqueada — alarme tocando. Sem rótulo, título “Alarme”.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:412px;padding:11px;box-sizing:border-box;background:#1A1A1C;border-radius:66px"><div style="position:relative;width:390px;height:844px;border-radius:55px;overflow:hidden;background:#0C0C0E;color:#fff">
+        <div style="position:absolute;top:11px;left:95px;width:200px;height:36px;border-radius:18px;background:#000;display:flex;align-items:center;justify-content:space-between;padding:0 14px;box-sizing:border-box;color:#FF3B30;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums"><span style="font-size:17px">{{ ic.zzz }}</span><span>08:42</span></div>
+        <div style="position:absolute;top:84px;left:0;right:0;text-align:center;font-size:20px;font-weight:600;color:rgba(255,255,255,.75)">sábado, 26 de setembro</div>
+        <div style="position:absolute;top:108px;left:0;right:0;text-align:center;font-size:104px;font-weight:700;letter-spacing:-2px;font-variant-numeric:tabular-nums">07:00</div>
+        <div style="position:absolute;left:14px;right:14px;bottom:130px;border-radius:24px;background:#232325;padding:16px 18px;display:flex;align-items:center;gap:14px">
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px"><div style="display:flex;align-items:center;gap:6px;font-size:15px;color:rgba(235,235,245,.6)"><span style="color:#FF3B30">{{ ic.zzz }}</span>Trabalho</div><div style="font-size:44px;font-weight:600;color:#FF3B30;font-variant-numeric:tabular-nums;letter-spacing:-.5px">08:42</div></div>
+          <div style="height:48px;padding:0 22px;border-radius:24px;background:#FF3B30;color:#000;display:flex;align-items:center;font-size:17px;font-weight:600">Parar</div>
+        </div>
+        <div style="position:absolute;bottom:8px;left:128px;width:134px;height:5px;border-radius:3px;background:#fff"></div>
+      </div></div>
+      <div style="font-size:14px;color:#6B6A66">Live Activity da soneca + Dynamic Island compacta</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="width:372px;border-radius:46px;background:#000;padding:22px 24px 20px;box-sizing:border-box;color:#fff;display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;align-items:center;gap:10px"><span style="color:#FF3B30;font-size:24px">{{ ic.alarm }}</span><span style="font-size:17px;font-weight:600;flex:1">Trabalho</span><span style="font-size:28px;font-weight:600;color:#FF3B30;font-variant-numeric:tabular-nums">07:00</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="height:50px;border-radius:25px;background:rgba(255,59,48,.22);color:#FF3B30;display:flex;align-items:center;justify-content:center;gap:8px;font-size:17px;font-weight:600">{{ ic.zzz }}Soneca</div>
+          <div style="height:50px;border-radius:25px;background:#FF3B30;color:#000;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600">Parar</div>
+        </div>
+      </div>
+      <div style="font-size:14px;color:#6B6A66">Dynamic Island expandida — alarme tocando</div>
+      <div style="width:240px;height:37px;border-radius:19px;background:#000;display:flex;align-items:center;justify-content:space-between;padding:0 14px;box-sizing:border-box;color:#FF3B30;font-size:15px;font-weight:600;margin-top:16px"><span style="font-size:18px">{{ ic.alarm }}</span><span>07:00</span></div>
+      <div style="font-size:14px;color:#6B6A66">Compacta — alarme tocando</div>
+    </div>
+  </div>
+</section>
+
+<section id="icone" style="display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:30px;font-weight:700">Ícone do app — 2 opções</div><div style="font-size:16px;color:#6B6A66">Preto com a cor padrão. O “5” do nome aparece no próprio display.</div></div>
+  <div style="display:flex;gap:80px;flex-wrap:wrap">
+    <div id="icone-a" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;gap:12px;align-items:center"><span style="background:#1C1C1E;color:#fff;font-size:14px;font-weight:600;padding:4px 10px;border-radius:6px">Ícone A</span><span style="font-size:17px;font-weight:600">Display LED</span></div>
+      <div style="display:flex;gap:28px;align-items:flex-end">
+        <div style="width:220px;height:220px;border-radius:49px;background:#000;display:flex;align-items:center;justify-content:center"><dc-import name="Clock" theme="led_classico" color="#FF3B30" time="05" off="0.16" fill="true" hint-size="130px,96px" style="width:136px;height:100px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:60px;height:60px;border-radius:13.5px;background:#000;display:flex;align-items:center;justify-content:center"><dc-import name="Clock" theme="led_classico" color="#FF3B30" time="05" off="0.18" fill="true" hint-size="36px,26px" style="width:38px;height:28px"></dc-import></div><span style="font-size:12px;color:#3A3A3C">Mais 5 Min</span></div>
+      </div>
+      <div style="font-size:14px;color:#6B6A66;max-width:340px">“05” em 7 segmentos, com os segmentos apagados visíveis. Lê como minutos.</div>
+    </div>
+    <div id="icone-b" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;gap:12px;align-items:center"><span style="background:#1C1C1E;color:#fff;font-size:14px;font-weight:600;padding:4px 10px;border-radius:6px">Ícone B</span><span style="font-size:17px;font-weight:600">Placa flip</span></div>
+      <div style="display:flex;gap:28px;align-items:flex-end">
+        <div style="width:220px;height:220px;border-radius:49px;background:#000;display:flex;align-items:center;justify-content:center"><dc-import name="Clock" theme="flip" color="#FF3B30" time="5" fill="true" hint-size="104px,140px" style="width:108px;height:146px"></dc-import></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:60px;height:60px;border-radius:13.5px;background:#000;display:flex;align-items:center;justify-content:center"><dc-import name="Clock" theme="flip" color="#FF3B30" time="5" fill="true" hint-size="30px,40px" style="width:30px;height:40px"></dc-import></div><span style="font-size:12px;color:#3A3A3C">Mais 5 Min</span></div>
+      </div>
+      <div style="font-size:14px;color:#6B6A66;max-width:340px">Uma placa só com o “5”: a volta de 5 minutos.</div>
+    </div>
+  </div>
+</section>
+
+<section id="ds" style="display:flex;flex-direction:column;gap:32px;max-width:1300px">
+  <div style="font-size:30px;font-weight:700">Design system</div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:48px">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:17px;font-weight:600">Cores do relógio (tint)</div>
+      <sc-for list="{{ colors }}" as="c" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:12px"><div style="width:36px;height:36px;border-radius:8px;background:{{ c.hex }}"></div><span style="flex:1;font-size:15px">{{ c.name }}</span><span style="font-size:13px;font-family:ui-monospace,Menlo,monospace;color:#6B6A66">{{ c.hex }}</span></div>
+      </sc-for>
+      <div style="font-size:13px;color:#6B6A66;line-height:1.4">Texto sobre a cor: sempre #000. Soneca diluída: cor a 20%. Informações noturnas: cor a 55–60%.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:17px;font-weight:600">Superfícies (iOS escuro)</div>
+      <sc-for list="{{ surfaces }}" as="c" hint-placeholder-count="6">
+        <div style="display:flex;align-items:center;gap:12px"><div style="width:36px;height:36px;border-radius:8px;background:{{ c.hex }};border:1px solid #BDBBB5;box-sizing:border-box"></div><span style="flex:1;font-size:15px">{{ c.name }}</span><span style="font-size:13px;font-family:ui-monospace,Menlo,monospace;color:#6B6A66">{{ c.hex }}</span></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:17px;font-weight:600">Tipografia (SF Pro, Dynamic Type)</div>
+      <sc-for list="{{ typo }}" as="t" hint-placeholder-count="6">
+        <div style="display:flex;justify-content:space-between;gap:12px;font-size:15px;border-bottom:1px solid #D6D4CE;padding-bottom:8px"><span>{{ t.n }}</span><span style="color:#6B6A66">{{ t.v }}</span></div>
+      </sc-for>
+      <div style="font-size:13px;color:#6B6A66;line-height:1.4">Relógio: tema próprio, escala pela tela e ignora Dynamic Type. Botões do alarme: 48–76 pt bold.</div>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;led_classico&quot;,&quot;digital_fino&quot;,&quot;grande_negrito&quot;,&quot;flip&quot;],&quot;default&quot;:&quot;led_classico&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Relógio nas telas&quot;},&quot;segundos&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Relógio nas telas&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const h = React.createElement;
+    const tema = this.props.tema ?? 'led_classico';
+    const segs = this.props.segundos ? '32' : '';
+    const S = (kids, extra = {}) => h('svg', {viewBox:'0 0 24 24', width:'1em', height:'1em', fill:'none', stroke:'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round', style:{display:'block', flex:'none'}, ...extra}, ...kids);
+    const P = (d, o = {}) => h('path', {d, ...o});
+    const alarmK = [h('circle',{cx:12,cy:13,r:7.5}), P('M12 9v4l2.5 2.5M4 5.5 6.5 3M20 5.5 17.5 3')];
+    const ic = {
+      plus: S([P('M12 5v14M5 12h14')], {strokeWidth:2.2}),
+      gear: S([h('circle',{cx:12,cy:12,r:3}), h('circle',{cx:12,cy:12,r:6.5}), P('M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8')], {strokeWidth:1.8}),
+      alarm: S(alarmK),
+      alarmSlash: S([...alarmK, P('M3.5 3.5l17 17')], {strokeWidth:1.6}),
+      lock: S([h('rect',{x:5,y:10.5,width:14,height:10,rx:2.2,fill:'currentColor',stroke:'none'}), P('M8 10.5V7.5a4 4 0 0 1 8 0v3')]),
+      speaker: S([P('M4 9.5h3.5L12 5.5v13l-4.5-4H4z',{fill:'currentColor',stroke:'none'}), P('M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11')]),
+      check: S([P('M5 12.5l4.5 4.5L19 7.5')], {strokeWidth:2.6}),
+      chevR: S([P('M9 5l7 7-7 7')], {strokeWidth:2.4}),
+      chevL: S([P('M15 4.5 7.5 12l7.5 7.5')], {strokeWidth:2.4}),
+      sunMin: S([h('circle',{cx:12,cy:12,r:3.5}), P('M12 4.5v1.5M12 18v1.5M4.5 12H6M18 12h1.5M6.7 6.7l1 1M16.3 16.3l1 1M6.7 17.3l1-1M16.3 7.7l1-1')]),
+      sunMax: S([h('circle',{cx:12,cy:12,r:4.5,fill:'currentColor'}), P('M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1')]),
+      zzz: S([P('M3 11h6l-6 7h6M12 4h5l-5 5.5h5M18.5 12H22l-3.5 4H22')], {strokeWidth:2.2}),
+      moon: S([P('M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7z',{fill:'currentColor',stroke:'none'})]),
+      boltSlash: S([P('M13 2.5 5.5 13.5h5.5l-1 8 7.5-11h-5.5z'), P('M3 3l18 18')], {strokeWidth:1.7}),
+      xmark: S([P('M6 6l12 12M18 6 6 18')], {strokeWidth:2.6}),
+      trash: S([P('M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v5M14 11v5')], {strokeWidth:1.8}),
+      status: h('div', {style:{display:'flex', gap:6, alignItems:'center', color:'#fff'}},
+        h('svg',{width:18,height:12,viewBox:'0 0 18 12',fill:'currentColor'}, h('rect',{x:0,y:8,width:3,height:4,rx:.7}), h('rect',{x:5,y:5.5,width:3,height:6.5,rx:.7}), h('rect',{x:10,y:3,width:3,height:9,rx:.7}), h('rect',{x:15,y:0,width:3,height:12,rx:.7})),
+        h('svg',{width:16,height:12,viewBox:'0 0 16 12',fill:'currentColor'}, h('path',{d:'M8 12 5.6 9.4a3.4 3.4 0 0 1 4.8 0zM3.4 7.2l-1.5-1.6a8.7 8.7 0 0 1 12.2 0l-1.5 1.6a6.5 6.5 0 0 0-9.2 0zM1.2 4.9 0 3.5a11.4 11.4 0 0 1 16 0l-1.2 1.4a9.6 9.6 0 0 0-13.6 0z'})),
+        h('svg',{width:27,height:13,viewBox:'0 0 27 13'}, h('rect',{x:.5,y:.5,width:23,height:12,rx:3.5,fill:'none',stroke:'currentColor',opacity:.4}), h('rect',{x:2,y:2,width:18,height:9,rx:2,fill:'currentColor'}), h('rect',{x:24.5,y:4.5,width:1.5,height:4,rx:.7,fill:'currentColor',opacity:.4})))
+    };
+    const colors = [
+      {id:'vermelho', name:'Vermelho', hex:'#FF3B30'}, {id:'ambar', name:'Âmbar', hex:'#FFA10A'},
+      {id:'verde', name:'Verde', hex:'#34D158'}, {id:'azul', name:'Azul', hex:'#3F8CFF'}, {id:'branco', name:'Branco', hex:'#EDEDED'}];
+    const themes = [
+      {id:'led_classico', name:'LED clássico', desc:'7 segmentos inclinados, apagados levemente visíveis'},
+      {id:'digital_fino', name:'Digital fino', desc:'numerais finos e altos'},
+      {id:'grande_negrito', name:'Grande negrito', desc:'numerais pesados, máxima legibilidade'},
+      {id:'flip', name:'Flip', desc:'placas com dobradiça central'}].map(t => ({...t, colors}));
+    const on = {tc:'#fff', track:'#FF3B30', jc:'flex-end'}, off = {tc:'rgba(235,235,245,.3)', track:'#39393D', jc:'flex-start'};
+    const alarms = [
+      {t:'06:30', sub:'Dias úteis · Trabalho', ...on},
+      {t:'07:15', sub:'Seg, Qua, Sex · Academia', ...on},
+      {t:'09:00', sub:'Todos os dias', ...off}];
+    const ten = [['05:40','Dias úteis',1],['06:00','Seg, Qua, Sex',0],['06:30','Dias úteis · Trabalho',1],['06:45','Uma vez',0],['07:00','Todos os dias',1],['07:15','Seg, Qua, Sex · Academia',1],['08:00','Uma vez',0],['09:00','Todos os dias',0],['13:30','Dias úteis · Remédio',1],['22:30','Todos os dias',0]]
+      .map(([t, sub, o]) => ({t, sub, ...(o ? on : off)}));
+    const sounds = ['Bipe digital','Campainha clássica','Sino','Despertar suave','Pássaros','Piano da manhã','Rádio-relógio']
+      .map((name, i) => ({name, sel:i===0, playing:i===0, locked:i>0}));
+    const setThemes = themes.map((t, i) => ({id:t.id, name:t.name, locked:i>0, border: i===0 ? '2px solid #FF3B30' : '1px solid #38383A'}));
+    const setColors = colors.map((c, i) => ({hex:c.hex, locked:i>0, ring: i===0 ? '#FF3B30' : 'transparent'}));
+    const payThemes = themes.map((t, i) => ({id:t.id, hex:colors[(i+1)%5].hex}));
+    const paidSounds = sounds.slice(1).map(s => s.name);
+    const surfaces = [
+      {name:'Fundo / noite', hex:'#000000'}, {name:'Célula agrupada', hex:'#1C1C1E'}, {name:'Célula em sheet', hex:'#2C2C2E'},
+      {name:'Controle inativo', hex:'#39393D'}, {name:'Separador', hex:'#545458'}, {name:'Destrutivo', hex:'#FF453A'}];
+    const typo = [
+      {n:'largeTitle', v:'34 bold'}, {n:'title2', v:'22 bold'}, {n:'headline', v:'17 semibold'},
+      {n:'body', v:'17 regular'}, {n:'subheadline', v:'15 regular'}, {n:'footnote', v:'13 regular'}, {n:'Hora na lista', v:'48 light, tabular'}];
+    return {tema, segs, ic, colors, themes, alarms, ten, sounds, setThemes, setColors, payThemes, paidSounds, surfaces, typo};
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400..900&amp;family=Big+Shoulders+Display:wght@100..900&amp;display=swap"></link></helmet><div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">{{ svg }}</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:480,&quot;height&quot;:180},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;led_classico&quot;,&quot;digital_fino&quot;,&quot;grande_negrito&quot;,&quot;flip&quot;],&quot;default&quot;:&quot;led_classico&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;color&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#FF3B30&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;time&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;07:00&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;seconds&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;dim&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0,&quot;max&quot;:1,&quot;step&quot;:0.05,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;},&quot;fill&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;align&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;center&quot;,&quot;left&quot;],&quot;default&quot;:&quot;center&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const h = React.createElement, p = this.props;
+    const theme = p.theme ?? 'led_classico', color = p.color ?? '#FF3B30';
+    const time = String(p.time ?? '07:00'), secs = p.seconds ? String(p.seconds) : '';
+    const dim = Number(p.dim ?? 1), fill = p.fill === true || p.fill === 'true';
+    const C = { led_classico:{w:68,sp:10,col:22}, digital_fino:{w:48,sp:6,col:20}, grande_negrito:{w:80,sp:4,col:28}, flip:{w:74,sp:6,col:18} }[theme] || {w:68,sp:10,col:22};
+    const SEG = {0:'abcdef',1:'bc',2:'abged',3:'abgcd',4:'fgbc',5:'afgcd',6:'afgedc',7:'abc',8:'abcdefg',9:'abcdfg'};
+    const t = 10, g = 1.6;
+    const H = (x0,x1,y)=>[[x0+g,y],[x0+g+t/2,y-t/2],[x1-g-t/2,y-t/2],[x1-g,y],[x1-g-t/2,y+t/2],[x0+g+t/2,y+t/2]];
+    const V = (x,y0,y1)=>[[x,y0+g],[x+t/2,y0+g+t/2],[x+t/2,y1-g-t/2],[x,y1-g],[x-t/2,y1-g-t/2],[x-t/2,y0+g+t/2]];
+    const segs = {a:H(5,55,5),b:V(55,5,50),c:V(55,50,95),d:H(5,55,95),e:V(5,50,95),f:V(5,5,50),g:H(5,55,50)};
+    const off = Number(p.off ?? 0.09) * Math.max(dim, .6);
+    const digit = ch => {
+      if (theme === 'led_classico') {
+        const on = SEG[ch] || '';
+        return h('g', {transform:'translate(11,0) skewX(-6)'}, ...Object.keys(segs).map(s => h('polygon', {key:s, points:segs[s].map(q=>q.join(',')).join(' '), fill:color, opacity:on.includes(s)?dim:off})));
+      }
+      if (theme === 'digital_fino') return h('text', {x:C.w/2, y:100, textAnchor:'middle', fontFamily:"'Big Shoulders Display'", fontWeight:200, fontSize:138, fill:color, opacity:dim}, ch);
+      if (theme === 'grande_negrito') return h('text', {x:C.w/2, y:100, textAnchor:'middle', fontFamily:"'Archivo'", fontWeight:800, fontSize:134, fill:color, opacity:dim}, ch);
+      return h('g', null,
+        h('rect', {x:0, y:0, width:C.w, height:100, rx:8, fill:'#171717'}),
+        h('rect', {x:0, y:51, width:C.w, height:41, fill:'#131313'}),
+        h('text', {x:C.w/2, y:88, textAnchor:'middle', fontFamily:"'Big Shoulders Display'", fontWeight:600, fontSize:104, fill:color, opacity:dim}, ch),
+        h('rect', {x:0, y:49, width:C.w, height:2.4, fill:'#000'}),
+        h('rect', {x:-1, y:44, width:3, height:12, rx:1, fill:'#2a2a2a'}),
+        h('rect', {x:C.w-2, y:44, width:3, height:12, rx:1, fill:'#2a2a2a'}));
+    };
+    const colon = () => {
+      const c = C.col/2;
+      if (theme === 'led_classico') return h('g', {transform:'translate(4,0) skewX(-6)', fill:color, opacity:dim}, h('rect',{x:c-5,y:25,width:10,height:10,rx:1}), h('rect',{x:c-5,y:65,width:10,height:10,rx:1}));
+      if (theme === 'grande_negrito') return h('g', {fill:color, opacity:dim}, h('rect',{x:c-7,y:24,width:14,height:14,rx:2}), h('rect',{x:c-7,y:68,width:14,height:14,rx:2}));
+      const r = theme === 'flip' ? 4.5 : 3.4;
+      return h('g', {fill:color, opacity:dim}, h('circle',{cx:c,cy:32,r}), h('circle',{cx:c,cy:72,r}));
+    };
+    const items = []; let x = 0, k = 0, last = 1;
+    const place = (ch, s, y) => {
+      const w = ch === ':' ? C.col : C.w;
+      items.push(h('g', {key:k++, transform:`translate(${x},${y}) scale(${s})`}, ch === ':' ? colon() : digit(ch)));
+      x += (w + C.sp) * s; last = s;
+    };
+    for (const ch of time) place(ch, 1, 0);
+    if (secs) { x += C.sp * 1.5; for (const ch of secs) place(ch, .42, 58); }
+    const vbW = Math.max(1, x - C.sp * last);
+    const par = p.align === 'left' ? 'xMinYMid meet' : 'xMidYMid meet';
+    const svg = h('svg', {viewBox:`-2 -2 ${vbW + 4} 104`, preserveAspectRatio:par, style:{display:'block', overflow:'visible', width:'100%', height: fill ? '100%' : 'auto'}}, ...items);
+    return { svg };
+  }
+}
+</script>
+</body>
+</html>
