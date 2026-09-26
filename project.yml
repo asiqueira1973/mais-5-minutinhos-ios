@@ -1,0 +1,87 @@
+# project.yml — fonte de verdade do projeto Xcode (gerado via `xcodegen generate`).
+# O .xcodeproj é derivado deste arquivo e não é versionado (spec seção 4/18).
+# App "Mais 5 Minutinhos": despertador de cabeceira com AlarmKit, 100% local (spec 0).
+#
+# Codinome técnico dos targets: "MaisCincoMinutinhos".
+name: MaisCincoMinutinhos
+
+options:
+  bundleIdPrefix: com.dablab              # mesmo prefixo dos apps publicados (spec 4)
+  deploymentTarget:
+    iOS: "26.0"                           # AlarmKit não existe antes (spec 4, assunção 24.1)
+  developmentLanguage: pt-BR              # idioma único do MVP (spec 17)
+  createIntermediateGroups: true
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: XGZW6Y6K25          # mesmo Apple Developer Team do portfólio (spec 4)
+    SWIFT_VERSION: "6.0"                  # Swift 6 (spec 4)
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    TARGETED_DEVICE_FAMILY: "1"           # somente iPhone (spec 3/17)
+    SUPPORTS_MACCATALYST: NO
+
+targets:
+  # ---------------------------------------------------------------------------
+  # App principal (SwiftUI). Neste momento contém só o app mínimo do spike 8.1.
+  # ---------------------------------------------------------------------------
+  MaisCincoMinutinhos:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Core
+      - path: Features
+      - path: Resources
+        excludes:
+          - "**/LICENSES.md"
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: "5 Minutinhos"   # nome sob o ícone (assunção 24.2)
+        NSAlarmKitUsageDescription: "O Mais 5 Minutinhos usa alarmes para tocar na hora certa, mesmo com o iPhone no silencioso."  # copy 15.9
+        NSSupportsLiveActivities: true        # Live Activity da soneca (spec 4)
+        UILaunchScreen:
+          UIColorName: ""
+        UIApplicationSupportsIndirectInputEvents: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown   # exigido pelo Xcode 26; ignorado em iPhone com Face ID
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIStatusBarStyle: UIStatusBarStyleLightContent
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dablab.mais5minutinhos
+    dependencies:
+      - target: MaisCincoMinutinhosWidget
+
+  # ---------------------------------------------------------------------------
+  # Widget extension: Live Activity da contagem da soneca (spec 4, 8.6, 10.9).
+  # Compartilha com o app só o metadata e o intent de parar (Core/Alarm).
+  # ---------------------------------------------------------------------------
+  MaisCincoMinutinhosWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widget
+      - path: Core/Alarm/Mais5Metadata.swift
+      - path: Core/Alarm/StopAlarmIntent.swift
+    info:
+      path: Widget/Info.plist
+      properties:
+        CFBundleDisplayName: "5 Minutinhos"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dablab.mais5minutinhos.widget
+
+schemes:
+  MaisCincoMinutinhos:
+    build:
+      targets:
+        MaisCincoMinutinhos: all
+    run:
+      config: Debug
