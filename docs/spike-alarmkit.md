@@ -63,7 +63,7 @@ Teste parcial em 26/09/2026, 12:38–12:40, com o app aberto:
 | Toca com app fechado, no silencioso, com botões na tela bloqueada | ✅ tocou às 12:45 com o app fechado e no silencioso. Tela bloqueada às 12:49: título + "5 Minutinhos", botão secundário grande na cor e **"slide to stop" do sistema** (ver divergências) |
 | Som é o arquivo do bundle (P1) | ✅ com o app aberto e com o app fechado no silencioso (iOS 26.6.2) |
 | App recebe `alerting` e mostra a tela em ≤ 1 s (P2) | ✅ 82 ms |
-| Parar na tela do app silencia em ≤ 1 s (P3) | |
+| Parar na tela do app silencia em ≤ 1 s (P3) | ✅ parcial: **Soneca** na tela do app (sobre o modo cabeceira) cortou o som na hora; falta repetir com **Parar** |
 | Soneca mostra contagem e volta a tocar depois de 5 min | ✅ contagem apareceu; falta confirmar se volta a tocar depois de 5 min |
 | Volume segue toque ou mídia (25.3) | ✅ segue o **volume de toque** (12:49: toque baixo e mídia alta → tocou baixo). Apertar o botão de volume durante o toque interrompe o alarme (comportamento do sistema) |
 
@@ -83,3 +83,4 @@ Decisão: `customSoundsEnabled` = **true** (som próprio funciona no iOS 26.6.2)
 - A prévia do modo cabeceira (layout 4C, tema LED) foi aprovada visualmente no iPhone às 12:57.
 - **Brilho com o alarme tocando no modo cabeceira:** o teste de 12:59 mostrou que a tela 10.5 ficava a 15%, escura demais. Enquanto o alarme toca, o brilho sobe para 60% (mesmo valor do toque, regra 8.5) e volta ao `brilho_cabeceira` depois de Soneca ou Parar. O spec não define esse valor; a decisão segue os princípios 0.1 e 0.3.
 - **O brilho não era devolvido ao sair do app:** o iOS mantém o brilho definido pelo app mesmo depois que ele vai para segundo plano. O `BedsideController` agora devolve brilho e idle timer ao sair do primeiro plano e reaplica o brilho da noite na volta. Fechar o app à força ou reinstalar com o modo aberto ainda deixa o brilho baixo, e não há API para evitar isso.
+- Teste combinado (sobre o modo cabeceira): tela 10.5 clara (60%), Soneca cortou o som na hora, volta ao relógio escurecido, toque clareia por 5 s e minimizar o app devolveu o brilho normal. ✅
