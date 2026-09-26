@@ -5,6 +5,8 @@ import SwiftUI
 // TEMPORÁRIO: será removida no épico 8.2.
 struct SpikeView: View {
     @State private var model = SpikeModel()
+    // Prévia do modo cabeceira (épico 8.5) aberta a partir do spike.
+    @State private var showsBedside = false
 
     var body: some View {
         NavigationStack {
@@ -18,6 +20,9 @@ struct SpikeView: View {
                     }
                     Button("Cancelar todos", role: .destructive) { model.cancelAll() }
                 }
+                Section("Prévia") {
+                    Button("Ver modo cabeceira") { showsBedside = true }
+                }
                 Section("Autorização: \(model.authorization)") {
                     Button("Pedir permissão") {
                         Task { await model.requestAuthorization() }
@@ -30,6 +35,15 @@ struct SpikeView: View {
                 }
             }
             .navigationTitle("Spike AlarmKit")
+        }
+        .overlay {
+            if showsBedside {
+                BedsideView(
+                    color: SpikeModel.tint,
+                    nextAlarm: model.nextAlarm(),
+                    onExit: { showsBedside = false }
+                )
+            }
         }
         .task { await model.observe() }
         .fullScreenCover(item: Binding(

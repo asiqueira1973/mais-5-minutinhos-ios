@@ -13,6 +13,8 @@ final class SpikeModel {
     var log: [String] = []
     // Alarme que está tocando agora, vindo de `alarmUpdates` (P2). Abre a tela de teste.
     var alertingID: UUID?
+    // Alarmes atuais do AlarmKit, para calcular o próximo alarme da prévia da cabeceira.
+    var alarms: [Alarm] = []
     // Estado de autorização do AlarmKit, para exibir na tela.
     var authorization: String = "?"
 
@@ -142,7 +144,54 @@ final class SpikeModel {
                 record("removido \(id.uuidString.prefix(8))")
             }
             last = current
+            self.alarms = alarms
             alertingID = alarms.first(where: { $0.state == .alerting })?.id
+        }
+    }
+
+    // Próximo alarme agendado, no formato da coluna 4C: hora + "hoje"/"amanhã"/dia
+    // (spec 8.5). Só considera agendas `.relative` em estado `scheduled`.
+    // Entradas: agora. Saída: (hora, dia) ou nil quando não há alarme (copy 15.4).
+    func nextAlarm(after now: Date = .now) -> (time: String, day: String)? {
+        let calendar = Calendar.current
+        let dates: [Date] = alarms.compactMap { alarm in
+            guard alarm.state == .scheduled, case .relative(let relative)? = alarm.schedule else { return nil }
+            let match = DateComponents(hour: relative.time.hour, minute: relative.time.minute)
+            switch relative.repeats {
+            case .never:
+                return calendar.nextDate(after: now, matching: match, matchingPolicy: .nextTime)
+            case .weekly(let days):
+                // Menor próxima data entre os dias da semana escolhidos.
+                return days.compactMap { day -> Date? in
+                    var c = match
+                    c.weekday = Self.weekdayNumber(day)
+                    return calendar.nextDate(after: now, matching: c, matchingPolicy: .nextTime)
+                }.min()
+            @unknown default:
+                return nil
+            }
+        }
+        guard let next = dates.min() else { return nil }
+        let time = BedsideView.timeText(next)
+        let day: String
+        if calendar.isDateInToday(next) { day = "hoje" }
+        else if calendar.isDateInTomorrow(next) { day = "amanhã" }
+        else { day = next.formatted(.dateTime.weekday(.wide).locale(Locale(identifier: "pt_BR"))) }
+        return (time, day)
+    }
+
+    // Converte `Locale.Weekday` para o número do `Calendar` (1 = domingo, seção 7.1).
+    // Entradas: dia da semana do AlarmKit. Saída: 1–7.
+    static func weekdayNumber(_ day: Locale.Weekday) -> Int {
+        switch day {
+        case .sunday: 1
+        case .monday: 2
+        case .tuesday: 3
+        case .wednesday: 4
+        case .thursday: 5
+        case .friday: 6
+        case .saturday: 7
+        @unknown default: 1
         }
     }
 
