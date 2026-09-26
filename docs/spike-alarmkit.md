@@ -1,6 +1,6 @@
 # Spike técnico AlarmKit (épico 8.1)
 
-Status: **aguardando teste em aparelho físico**
+Status: **aprovado** (falta só confirmar a volta da soneca depois de 5 min)
 
 | Campo | Valor |
 |---|---|
@@ -60,7 +60,7 @@ Teste parcial em 26/09/2026, 12:38–12:40, com o app aberto:
 
 | Critério 8.1 | Resultado |
 |---|---|
-| Toca com app fechado, no silencioso, com botões na tela bloqueada | ✅ tocou às 12:45 com o app fechado e no silencioso. Tela bloqueada às 12:49: título + "5 Minutinhos", botão secundário grande na cor e **"slide to stop" do sistema** (ver divergências) |
+| Toca com app fechado, no silencioso, com botões na tela bloqueada | ✅ tocou às 12:45 com o app fechado e no silencioso. Tela bloqueada às 13:15, depois da correção: título + "5 Minutinhos", botão **"Soneca" em texto preto sobre a cor**, legível, e **"slide to stop" do sistema** (ver divergências). O ícone `zzz` do `AlarmButton` não aparece nessa apresentação |
 | Som é o arquivo do bundle (P1) | ✅ com o app aberto e com o app fechado no silencioso (iOS 26.6.2) |
 | App recebe `alerting` e mostra a tela em ≤ 1 s (P2) | ✅ 82 ms |
 | Parar na tela do app silencia em ≤ 1 s (P3) | ✅ **Parar** e **Soneca** na tela do app cortaram o som na hora |
