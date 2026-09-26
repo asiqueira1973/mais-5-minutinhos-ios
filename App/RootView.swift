@@ -17,6 +17,9 @@ struct RootView: View {
     @State private var alertingID: UUID?
     // Últimos ids vistos no AlarmKit, para perceber alarmes que sumiram.
     @State private var knownIDs: Set<UUID> = []
+    // Posição do aparelho e carregador (regra 11.4) e última saída manual.
+    @State private var device = DevicePositionMonitor()
+    @State private var lastManualExit: Date?
 
     private var prefs: Preferencias? { preferences.first }
     private var cor: CorRelogio { prefs?.cor_relogio ?? .vermelho }
@@ -29,11 +32,19 @@ struct RootView: View {
         .overlay {
             if showsBedside {
                 BedsideView(
+                    theme: prefs?.tema_relogio ?? .ledClassico,
                     color: cor.color,
+                    is24h: is24h,
+                    showSeconds: prefs?.mostrar_segundos ?? false,
                     brightness: prefs?.brilho_cabeceira ?? 0.30,
+                    position: device.position,
                     nextAlarm: nextAlarmInfo(),
                     isRinging: alertingID != nil,
-                    onExit: { showsBedside = false }
+                    onExit: {
+                        // Saída manual: a entrada automática espera 10 min (regra 11.4).
+                        lastManualExit = .now
+                        showsBedside = false
+                    }
                 )
             }
         }
@@ -55,10 +66,14 @@ struct RootView: View {
         .preferredColorScheme(.dark)
         .onAppear { controller.context = context }
         .task { await observeAlarmKit() }
+        .task { await checkAutoEntry() }
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active {
                 BedsideController.restorePendingBrightness()
+                device.start()
                 Task { await controller.reconcile(in: context) }
+            } else {
+                device.stop()
             }
         }
     }
@@ -85,15 +100,41 @@ struct RootView: View {
         }
     }
 
+    // A cada segundo, com o app na frente e fora do modo cabeceira, avalia a
+    // entrada automática (regra 11.4).
+    // Entradas: nenhuma. Saída: nenhuma (roda enquanto a view existir).
+    private func checkAutoEntry() async {
+        while !Task.isCancelled {
+            try? await Task.sleep(for: .seconds(1))
+            guard !showsBedside, alertingID == nil else { continue }
+            let input = AutoEntryInput(
+                enabled: prefs?.entrar_automatico ?? true,
+                isForeground: scenePhase == .active,
+                position: device.position,
+                positionSince: device.positionSince,
+                isCharging: device.isCharging,
+                nextActiveAlarm: nextActiveAlarm(after: .now)?.date,
+                lastManualExit: lastManualExit,
+                now: .now
+            )
+            if BedsideAutoEntry.shouldEnter(input) { showsBedside = true }
+        }
+    }
+
+    // Alarme ativo que toca primeiro a partir de `now` (8.5, regra 11.4).
+    // Entradas: instante. Saída: alarme e data, ou nil se não há alarme ativo.
+    private func nextActiveAlarm(after now: Date) -> (alarme: Alarme, date: Date)? {
+        alarms.filter(\.ativo).compactMap { alarme -> (alarme: Alarme, date: Date)? in
+            NextAlarm.date(hora: alarme.hora, minuto: alarme.minuto, dias: alarme.dias_repeticao, after: now)
+                .map { (alarme, $0) }
+        }.min { $0.date < $1.date }
+    }
+
     // Próximo alarme ativo para o modo cabeceira ("07:00 amanhã", 8.5).
     // Entradas: nenhuma. Saída: hora e dia, ou nil (copy 15.4).
     private func nextAlarmInfo() -> (time: String, day: String)? {
         let now = Date.now
-        let next = alarms.filter(\.ativo).compactMap { alarme -> (Alarme, Date)? in
-            NextAlarm.date(hora: alarme.hora, minuto: alarme.minuto, dias: alarme.dias_repeticao, after: now)
-                .map { (alarme, $0) }
-        }.min { $0.1 < $1.1 }
-        guard let (alarme, date) = next else { return nil }
+        guard let (alarme, date) = nextActiveAlarm(after: now) else { return nil }
         return (
             ClockFormat.text(hora: alarme.hora, minuto: alarme.minuto, is24h: is24h),
             NextAlarm.dayText(for: date, now: now)

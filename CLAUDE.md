@@ -37,7 +37,7 @@ App/                    entrada (MaisCincoMinutinhosApp), AppDelegate (trava de 
 Core/Alarm/             Mais5Metadata (AlarmMetadata), StopAlarmIntent (Parar da Live Activity); AlarmScheduler no 8.3
 Core/Persistence/       DatabaseEnums, SchemaV1 (Alarme, Preferencias), Persistence (container + singleton), MigrationPlan
 Core/Sound/, Core/Purchase/          épicos 8.4 e 8.8
-Features/Bedside/       LEDClockView (7 segmentos em Canvas), BedsideController (brilho/idle/orientação), BedsideView (4C)
+Features/Bedside/       ClockView (4 temas: LED em Canvas, flip em placas, texto medido e ampliado), LEDClockView, BedsideController (brilho/idle/orientação que segue o aparelho), BedsideView (4C), BedsideAutoEntry (regra 11.4 pura + DevicePositionMonitor com acelerômetro)
 Core/Alarm/             + AlarmScheduler (única porta para o AlarmKit), Reconciliation (plano puro da 11.6), NextAlarm/ClockFormat, Weekdays
 Core/Sound/             SoundCatalog (sons, grátis/pagos, customSoundsEnabled, som efetivo), SoundPreviewPlayer (prévia ≤ 5 s, .playback)
 App/RootView            lista + cabeceira por cima + 10.5 + 10.8; observa `alarmUpdates` e reconcilia ao voltar ao primeiro plano

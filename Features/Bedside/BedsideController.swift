@@ -29,16 +29,44 @@ final class BedsideController {
     }
 
     // Entra no modo: idle timer desligado, brilho da cabeceira, paisagem (8.5).
-    // Entradas: brilho da noite (`brilho_cabeceira`, 0,05–1,0, seção 7.2).
     // Saída: nenhuma. Guarda os valores anteriores para `exit()`.
-    func enter(brightness: Double) {
+    // Entradas: brilho da noite (`brilho_cabeceira`, 0,05–1,0, seção 7.2) e posição
+    // atual do aparelho (para abrir já do lado certo).
+    func enter(brightness: Double, position: DevicePosition) {
         guard !isActive else { return }
         isActive = true
         isSuspended = false
         nightBrightness = CGFloat(min(max(brightness, 0.05), 1.0))
         applyNightSettings()
-        setOrientation(.landscape, preferred: .landscapeRight)
+        setOrientation(.landscape, preferred: Self.interfaceOrientation(for: position) ?? .landscapeRight)
         startChargerMonitoring()
+    }
+
+    // Segue o lado da paisagem em que o aparelho está, mesmo com o bloqueio de
+    // rotação ligado (a posição vem do acelerômetro). Tela para cima: mantém.
+    // Entradas: posição. Saída: nenhuma.
+    func follow(_ position: DevicePosition) {
+        guard isActive, let orientation = Self.interfaceOrientation(for: position) else { return }
+        setOrientation(.landscape, preferred: orientation)
+    }
+
+    // Brilho da noite mudou nos Ajustes com o modo aberto: aplica na hora.
+    // Entradas: novo brilho. Saída: nenhuma.
+    func updateNightBrightness(_ brightness: Double) {
+        nightBrightness = CGFloat(min(max(brightness, 0.05), 1.0))
+        guard isActive, !isSuspended, !isAwake else { return }
+        screen?.brightness = nightBrightness
+    }
+
+    // Orientação de interface para a posição física (gravidade em −x = lado
+    // esquerdo para baixo = `.landscapeRight`). Entradas: posição.
+    // Saída: orientação, ou nil quando a posição não define um lado.
+    private static func interfaceOrientation(for position: DevicePosition) -> UIInterfaceOrientationMask? {
+        switch position {
+        case .landscapeLeftSideDown: .landscapeRight
+        case .landscapeRightSideDown: .landscapeLeft
+        case .faceUp, .other: nil
+        }
     }
 
     // Sai do modo: restaura idle timer, brilho e retrato (8.5).
@@ -50,7 +78,6 @@ final class BedsideController {
         chargerTask?.cancel()
         if let batteryObserver { NotificationCenter.default.removeObserver(batteryObserver) }
         batteryObserver = nil
-        UIDevice.current.isBatteryMonitoringEnabled = false
         // Se o app já tinha saído do primeiro plano, o brilho já foi devolvido.
         if !isSuspended { restoreUserSettings() }
         isSuspended = false
@@ -121,24 +148,6 @@ final class BedsideController {
         guard isActive, !isSuspended else { return }
         isAwake = true
         screen?.brightness = max(nightBrightness, 0.6)
-        awakeTask?.cancel()
-        awakeTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(5))
-            guard !Task.isCancelled, let self else { return }
-            self.isAwake = false
-            self.screen?.brightness = self.nightBrightness
-        }
-    }
-
-    // TEMPORÁRIO (spike): ajusta o brilho da noite ao vivo para achar o padrão de
-    // `brilho_cabeceira` (seção 7.2). Mantém os controles visíveis por mais 5 s e
-    // mostra na tela o próprio brilho escolhido (não os 60% do toque).
-    // Entradas: brilho 0,05–1,0. Saída: nenhuma.
-    func tuneNightBrightness(_ value: Double) {
-        guard isActive, !isSuspended else { return }
-        nightBrightness = CGFloat(min(max(value, 0.05), 1.0))
-        screen?.brightness = nightBrightness
-        isAwake = true
         awakeTask?.cancel()
         awakeTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(5))
