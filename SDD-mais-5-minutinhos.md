@@ -143,7 +143,7 @@ Exclusão: **hard delete** (não há histórico referenciando). Excluir remove d
 | `cor_relogio` | `cor_relogio` | não | `vermelho` | |
 | `formato_24h` | Bool | não | `true` | |
 | `mostrar_segundos` | Bool | não | `false` | |
-| `brilho_cabeceira` | Double | não | 0.15 | 0.05–1.0 |
+| `brilho_cabeceira` | Double | não | 0.30 | 0.05–1.0. Default ajustado de 0.15 para 0.30 no spike 8.1 (teste no quarto escuro) |
 | `entrar_automatico` | Bool | não | `true` | Ver 11.4 |
 
 Enum `tema_relogio`: `led_classico`, `digital_fino`, `grande_negrito`, `flip`.
@@ -350,7 +350,7 @@ Livre para o agente: animações de transição, ícone do app (vem do Claude De
 | Item | Alvo |
 |---|---|
 | Abertura a frio | < 1 s em iPhone 12 |
-| Modo cabeceira, 8 h, brilho 15% | Não deve impedir a carga de subir (medir no spike com carregador de 20 W) |
+| Modo cabeceira, 8 h, brilho 30% | Não deve impedir a carga de subir (medir no spike com carregador de 20 W) |
 | Tamanho do binário | < 25 MB (sons inclusos) |
 | Acessibilidade | Dynamic Type até AX5 nas telas de configuração; VoiceOver lê hora e estado de cada alarme; alvos ≥ 44 pt (≥ 88 pt na 10.5) |
 | Idiomas | pt-BR no MVP; strings em String Catalog prontas para en |

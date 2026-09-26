@@ -17,7 +17,7 @@ final class BedsideController {
     private var isSuspended = false
     private var savedBrightness: CGFloat?
     private var savedIdleTimer = false
-    private var nightBrightness: CGFloat = 0.15
+    private var nightBrightness: CGFloat = 0.30
     private var awakeTask: Task<Void, Never>?
     private var chargerTask: Task<Void, Never>?
     private var batteryObserver: NSObjectProtocol?

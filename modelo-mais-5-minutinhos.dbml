@@ -49,6 +49,6 @@ Table preferencias {
   cor_relogio cor_relogio [not null, default: 'vermelho']
   formato_24h bool [not null, default: true]
   mostrar_segundos bool [not null, default: false]
-  brilho_cabeceira double [not null, default: 0.15, note: '0.05-1.0']
+  brilho_cabeceira double [not null, default: 0.30, note: '0.05-1.0 (default 0.30 desde o spike 8.1)']
   entrar_automatico bool [not null, default: true]
 }

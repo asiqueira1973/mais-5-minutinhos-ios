@@ -7,7 +7,7 @@ import SwiftUI
 // copy 15.4), se há alarme tocando e ação de sair. Saída: view em tela cheia.
 struct BedsideView: View {
     let color: Color
-    var brightness: Double = 0.15
+    var brightness: Double = 0.30
     var nextAlarm: (time: String, day: String)?
     // true enquanto um alarme toca por cima do modo (tela 10.5).
     var isRinging = false
