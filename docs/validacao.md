@@ -18,3 +18,5 @@ A seção 26 exige todos os critérios de 8.1 a 8.8 verificados em iPhone físic
 
 - 26/09/2026: build 1.0.0 (2), só iPhone, submetido à App Store ("Waiting for Review"). O build 1 saiu com iPad por engano e não foi usado.
 - **Em aberto:** o roteiro em aparelho acima foi feito só em parte (spike 8.1 e testes visuais). Rodar pelo TestFlight durante a revisão; se algo falhar, cancelar a submissão e enviar build 3.
+- 26/09/2026, TestFlight build 2 (iPhone 13 mini): compra em sandbox liberou tema/cor (flip âmbar), cabeceira com próximo alarme "hoje", alarme tocou com o app aberto (10.5 em paisagem), soneca → "Soneca até 17:31" → tocou de novo após 5 min → Parar. ✅ Observado: com o app aberto, o AlarmKit também mostra o banner do sistema ("5 Minutinhos / Alarme") por cima da 10.5; fora do controle do app.
+- Ainda a conferir: Foco Dormir, alarme de toque único aparece desligado na lista depois de parar, entrada automática no carregador, "Restaurar compra".
