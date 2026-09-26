@@ -130,6 +130,24 @@ final class BedsideController {
         }
     }
 
+    // TEMPORÁRIO (spike): ajusta o brilho da noite ao vivo para achar o padrão de
+    // `brilho_cabeceira` (seção 7.2). Mantém os controles visíveis por mais 5 s e
+    // mostra na tela o próprio brilho escolhido (não os 60% do toque).
+    // Entradas: brilho 0,05–1,0. Saída: nenhuma.
+    func tuneNightBrightness(_ value: Double) {
+        guard isActive, !isSuspended else { return }
+        nightBrightness = CGFloat(min(max(value, 0.05), 1.0))
+        screen?.brightness = nightBrightness
+        isAwake = true
+        awakeTask?.cancel()
+        awakeTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(5))
+            guard !Task.isCancelled, let self else { return }
+            self.isAwake = false
+            self.screen?.brightness = self.nightBrightness
+        }
+    }
+
     // Alarme tocando com o modo cabeceira aberto: sobe o brilho para o mesmo valor
     // do toque (60%) para a pessoa enxergar Soneca/Parar; ao terminar, volta ao
     // brilho da noite (decisão do spike 8.1, ver docs/spike-alarmkit.md).

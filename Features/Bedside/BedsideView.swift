@@ -17,6 +17,8 @@ struct BedsideView: View {
     @Environment(\.scenePhase) private var scenePhase
     // Deslocamento anti-marcação: até 6 pt em posição aleatória a cada minuto (8.5).
     @State private var burnInOffset: CGSize = .zero
+    // TEMPORÁRIO (spike): brilho escolhido no slider de teste; nil = usa `brightness`.
+    @State private var tunedBrightness: Double?
 
     // Localidade fixa pt-BR: o MVP é só em português (spec 17).
     private static let locale = Locale(identifier: "pt_BR")
@@ -103,15 +105,37 @@ struct BedsideView: View {
     // 14%, texto secundário, raio 8).
     @ViewBuilder private var exitButton: some View {
         if controller.isAwake {
-            Button("Sair", action: onExit)
+            HStack(spacing: 16) {
+                brightnessTuner
+                Button("Sair", action: onExit)
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 20)
                 .frame(minHeight: 44)
                 .background(Color.white.opacity(0.14), in: .rect(cornerRadius: 8))
-                .padding(24)
-                .transition(.opacity)
+            }
+            .padding(24)
+            .transition(.opacity)
         }
+    }
+
+    // TEMPORÁRIO (spike): slider para achar o brilho padrão da noite (7.2),
+    // com a porcentagem ao lado. Some junto com o botão "Sair".
+    private var brightnessTuner: some View {
+        let value = Binding<Double>(
+            get: { tunedBrightness ?? brightness },
+            set: { tunedBrightness = $0; controller.tuneNightBrightness($0) }
+        )
+        return HStack(spacing: 10) {
+            Image(systemName: "sun.min")
+            Slider(value: value, in: 0.05...1.0).frame(width: 220)
+            Image(systemName: "sun.max")
+            Text("\(Int((value.wrappedValue * 100).rounded()))%")
+                .monospacedDigit()
+                .frame(width: 48, alignment: .trailing)
+        }
+        .foregroundStyle(.secondary)
+        .tint(color)
     }
 
     // Hora no formato 24h "HH:mm" (default `formato_24h = true`, seção 7.2).
