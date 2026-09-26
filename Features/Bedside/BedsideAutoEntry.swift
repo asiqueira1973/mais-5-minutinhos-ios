@@ -107,6 +107,7 @@ final class DevicePositionMonitor {
         updateBattery()
     }
 
+    // Lê se está carregando (`charging` ou `full`, regra 11.4). Entradas: nenhuma. Saída: nenhuma.
     private func updateBattery() {
         let state = UIDevice.current.batteryState
         isCharging = state == .charging || state == .full

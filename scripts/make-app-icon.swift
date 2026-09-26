@@ -10,10 +10,12 @@ import UniformTypeIdentifiers
 let size: CGFloat = 1024
 let red = NSColor(srgbRed: 1, green: 0x3B / 255.0, blue: 0x30 / 255.0, alpha: 1)
 let t: CGFloat = 10, g: CGFloat = 1.6
+// Segmento horizontal hexagonal (mesma geometria do LEDClockView).
 func H(_ x0: CGFloat, _ x1: CGFloat, _ y: CGFloat) -> [CGPoint] {
     [.init(x: x0+g, y: y), .init(x: x0+g+t/2, y: y-t/2), .init(x: x1-g-t/2, y: y-t/2),
      .init(x: x1-g, y: y), .init(x: x1-g-t/2, y: y+t/2), .init(x: x0+g+t/2, y: y+t/2)]
 }
+// Segmento vertical hexagonal (mesma geometria do LEDClockView).
 func V(_ x: CGFloat, _ y0: CGFloat, _ y1: CGFloat) -> [CGPoint] {
     [.init(x: x, y: y0+g), .init(x: x+t/2, y: y0+g+t/2), .init(x: x+t/2, y: y1-g-t/2),
      .init(x: x, y: y1-g), .init(x: x-t/2, y: y1-g-t/2), .init(x: x-t/2, y: y0+g+t/2)]

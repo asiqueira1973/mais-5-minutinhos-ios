@@ -12,6 +12,7 @@ struct StopAlarmIntent: LiveActivityIntent {
     @Parameter(title: "ID do alarme")
     var alarmID: String
 
+    // Inicializador vazio exigido pelo App Intents. Entradas: nenhuma. Saída: intent.
     init() {}
 
     // Cria o intent para um alarme específico.

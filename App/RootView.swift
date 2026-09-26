@@ -191,6 +191,7 @@ struct RootView: View {
 }
 
 #if DEBUG
+// Ganchos de depuração da raiz (só em DEBUG).
 extension RootView {
     // SÓ DEPURAÇÃO (não entra na build da loja): simula estados para conferir as
     // telas no simulador sem tocar alarme de verdade.

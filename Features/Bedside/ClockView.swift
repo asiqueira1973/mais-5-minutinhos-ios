@@ -197,6 +197,7 @@ struct FlipClock: View {
         .clipShape(RoundedRectangle(cornerRadius: 8 * unit))
     }
 
+    // Pino lateral da placa (#2A2A2A, 3×12). Entradas: escala. Saída: view.
     private func pin(_ unit: CGFloat) -> some View {
         RoundedRectangle(cornerRadius: 1 * unit)
             .fill(Color(white: 0x2A / 255))

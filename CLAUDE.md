@@ -8,7 +8,11 @@ Despertador de cabeceira para iPhone: à noite, relógio grande e escuro; de man
 - `cabeceira-design-system/`: referência definitiva de UI. O spec cita `mais5-design-system/`; a pasta real tem este nome.
 - `docs/spike-alarmkit.md`: resultado do spike 8.1 e decisões tomadas durante ele.
 - `docs/mudancas-pendentes-spec.md`: pedidos que ainda não entraram no spec. Não implemente nada daí sem o texto aprovado.
-- `DOCUMENTACAO-TECNICA.md`: gerada ao final (seção 19) e atualizada no mesmo commit de toda mudança.
+- `DOCUMENTACAO-TECNICA.md`: modelo, regras fora da UI, mapa de telas, ações e **divergências do spec** (seção 19). Atualize no mesmo commit de toda mudança.
+- `docs/validacao.md`: o que cada épico já verificou (iPhone, simulador, testes) e o que falta em aparelho antes do envio.
+
+## Estado
+MVP completo (épicos 8.1–8.8 + tela 10.10). Falta o roteiro em aparelho antes do envio (`docs/validacao.md`) e a publicação (skill `app-store-dablab`).
 
 ## Decisões já tomadas (não reabrir)
 - Deployment target iOS 26.0, usando `#available(iOS 26.1, *)` onde o SDK 26.1 mudou o AlarmKit.
@@ -37,7 +41,7 @@ Despertador de cabeceira para iPhone: à noite, relógio grande e escuro; de man
 ## Mapa da arquitetura
 ```
 App/                    entrada (MaisCincoMinutinhosApp), AppDelegate (trava de orientação), Info.plist gerado
-Core/Alarm/             Mais5Metadata (AlarmMetadata), StopAlarmIntent (Parar da Live Activity); AlarmScheduler no 8.3
+Core/Alarm/             Mais5Metadata (AlarmMetadata), StopAlarmIntent (Parar da Live Activity)
 Core/Persistence/       DatabaseEnums, SchemaV1 (Alarme, Preferencias), Persistence (container + singleton), MigrationPlan
 Core/Sound/, Core/Purchase/          épicos 8.4 e 8.8
 Features/Bedside/       ClockView (4 temas: LED em Canvas, flip em placas, texto medido e ampliado), LEDClockView, BedsideController (brilho/idle/orientação que segue o aparelho), BedsideView (4C), BedsideAutoEntry (regra 11.4 pura + DevicePositionMonitor com acelerômetro)
@@ -55,7 +59,8 @@ MaisCincoMinutinhos.storekit    StoreKit local (loja BRA) do scheme e dos testes
 Resources/Sounds/       .caf (Linear PCM 44,1 kHz mono ≤ 30 s) + LICENSES.md
 Widget/                 extension com a Live Activity da soneca (AlarmAttributes<Mais5Metadata>)
 Tests/                  Swift Testing (seção 22)
-docs/                   spike e mudanças pendentes
+docs/                   spike 8.1, validação por épico, mudanças pedidas fora do spec
+scripts/                make-app-icon.swift (ícone A), make-sounds.py (7 sons sintéticos)
 ```
 
 ## Comandos
