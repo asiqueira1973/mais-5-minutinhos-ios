@@ -52,6 +52,7 @@ Teste parcial em 26/09/2026, 12:38–12:40, com o app aberto:
 - FA23CD52: `alerting` às 12:39:00,047; tela de teste exibida às 12:39:00,129 (**82 ms**).
 - `countdown(id:)` chamado às 12:39:10,757; estado `countdown` às 12:39:10,777 (**20 ms**).
 - O som ouvido foi o **bipe provisório** do bundle, e não o som padrão nem um bipe de erro.
+- A contagem da soneca apareceu (Live Activity).
 - 999664D2 (bipe_digital.caf, agendado às 12:38:29 para 12:40) tocou em seguida, como esperado.
 
 | Critério 8.1 | Resultado |
@@ -60,7 +61,7 @@ Teste parcial em 26/09/2026, 12:38–12:40, com o app aberto:
 | Som é o arquivo do bundle (P1) | ✅ com o app aberto (iOS 26.6.2); falta confirmar com o app fechado |
 | App recebe `alerting` e mostra a tela em ≤ 1 s (P2) | ✅ 82 ms |
 | Parar na tela do app silencia em ≤ 1 s (P3) | |
-| Soneca mostra contagem e volta a tocar depois de 5 min | |
+| Soneca mostra contagem e volta a tocar depois de 5 min | ✅ contagem apareceu; falta confirmar se volta a tocar depois de 5 min |
 | Volume segue toque ou mídia (25.3) | |
 
 Decisão: `customSoundsEnabled` = _preencher_
