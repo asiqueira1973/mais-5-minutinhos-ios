@@ -95,7 +95,9 @@ final class SpikeModel {
     // no SDK 26.1, premissa P4); no 26.0 ainda é preciso informar o botão "Parar".
     // Entradas: título do alerta. Saída: atributos para `AlarmConfiguration`.
     nonisolated static func attributes(title: String) -> AlarmAttributes<Mais5Metadata> {
-        let snooze = AlarmButton(text: "Soneca", textColor: tint, systemImageName: "zzz")
+        // O sistema pinta o fundo do botão secundário com `tintColor`; o texto
+        // precisa ser preto para aparecer (design: texto sobre a cor é sempre #000).
+        let snooze = AlarmButton(text: "Soneca", textColor: .black, systemImageName: "zzz")
         let alert: AlarmPresentation.Alert
         if #available(iOS 26.1, *) {
             alert = AlarmPresentation.Alert(

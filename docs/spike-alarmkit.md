@@ -60,11 +60,18 @@ Teste parcial em 26/09/2026, 12:38–12:40, com o app aberto:
 
 | Critério 8.1 | Resultado |
 |---|---|
-| Toca com app fechado, no silencioso, com botões na tela bloqueada | ✅ tocou às 12:45 com o app fechado e no silencioso; botões da tela bloqueada a confirmar |
+| Toca com app fechado, no silencioso, com botões na tela bloqueada | ✅ tocou às 12:45 com o app fechado e no silencioso. Tela bloqueada às 12:49: título + "5 Minutinhos", botão secundário grande na cor e **"slide to stop" do sistema** (ver divergências) |
 | Som é o arquivo do bundle (P1) | ✅ com o app aberto e com o app fechado no silencioso (iOS 26.6.2) |
 | App recebe `alerting` e mostra a tela em ≤ 1 s (P2) | ✅ 82 ms |
 | Parar na tela do app silencia em ≤ 1 s (P3) | |
 | Soneca mostra contagem e volta a tocar depois de 5 min | ✅ contagem apareceu; falta confirmar se volta a tocar depois de 5 min |
-| Volume segue toque ou mídia (25.3) | ⚠️ inconclusivo: apertar o volume para cima **silenciou o alarme** (comportamento do sistema). Repetir mudando o volume antes do toque |
+| Volume segue toque ou mídia (25.3) | ✅ segue o **volume de toque** (12:49: toque baixo e mídia alta → tocou baixo). Apertar o botão de volume durante o toque interrompe o alarme (comportamento do sistema) |
 
-Decisão: `customSoundsEnabled` = _preencher_
+Decisão: `customSoundsEnabled` = **true** (som próprio funciona no iOS 26.6.2).
+
+## Divergências e achados para o spec
+
+1. **Parar na tela bloqueada é "deslizar para parar" (slide to stop)**, desenhado pelo sistema a partir do iOS 26.1 (`stopButton` descontinuado). Contraria o princípio 0.1 só na apresentação do sistema. Na tela 10.5 do app e na Live Activity, Parar continua sendo um toque. Não há como o app mudar isso.
+2. **O botão secundário (Soneca) usa `tintColor` como fundo.** Com `textColor` igual à cor, o texto ficou invisível (bug do spike, corrigido para `.black`). O design previa Soneca com fundo a 22% e texto na cor; na apresentação do sistema o resultado é fundo na cor e texto preto.
+3. **Volume segue o de toque (25.3).** Pelo spec, a tela 10.2 ganha uma dica, mas o texto dela não existe na seção 15. Aguardando a copy.
+4. Os textos do sistema ("slide to stop", "Show less") seguem o idioma do aparelho (o de teste está em inglês).
