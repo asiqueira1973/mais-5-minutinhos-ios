@@ -46,6 +46,8 @@ struct SpikeView: View {
                 )
             }
         }
+        // Devolve o brilho se o app foi fechado à força no modo cabeceira (8.5).
+        .onAppear { if !showsBedside { BedsideController.restorePendingBrightness() } }
         .task { await model.observe() }
         .fullScreenCover(item: Binding(
             get: { model.alertingID.map(AlertingItem.init) },

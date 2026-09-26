@@ -79,11 +79,30 @@ final class BedsideController {
         applyNightSettings()
     }
 
+    // Chave do brilho da pessoa ainda não devolvido. Fica no UserDefaults para
+    // sobreviver a um fechamento à força com o modo aberto (preferência de aparelho,
+    // não é dado do usuário; o spec 7 cobre só alarmes e preferências do app).
+    private static let pendingBrightnessKey = "bedside.pendingBrightness"
+
+    // Na abertura do app: se ficou um brilho pendente (app fechado à força no modo
+    // cabeceira), devolve e limpa (regra 8.5).
+    // Entradas: nenhuma. Saída: nenhuma.
+    static func restorePendingBrightness() {
+        let defaults = UserDefaults.standard
+        guard let value = defaults.object(forKey: pendingBrightnessKey) as? Double else { return }
+        defaults.removeObject(forKey: pendingBrightnessKey)
+        let scene = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first
+        scene?.screen.brightness = CGFloat(value)
+    }
+
     // Guarda brilho e idle timer atuais e aplica os da noite.
     // Entradas: nenhuma. Saída: nenhuma.
     private func applyNightSettings() {
         savedIdleTimer = UIApplication.shared.isIdleTimerDisabled
         savedBrightness = screen?.brightness
+        if let savedBrightness {
+            UserDefaults.standard.set(Double(savedBrightness), forKey: Self.pendingBrightnessKey)
+        }
         UIApplication.shared.isIdleTimerDisabled = true
         screen?.brightness = nightBrightness
     }
@@ -93,6 +112,7 @@ final class BedsideController {
     private func restoreUserSettings() {
         UIApplication.shared.isIdleTimerDisabled = savedIdleTimer
         if let savedBrightness { screen?.brightness = savedBrightness }
+        UserDefaults.standard.removeObject(forKey: Self.pendingBrightnessKey)
     }
 
     // Toque na tela: brilho a 60% e botão "Sair" por 5 s, depois volta (8.5).
