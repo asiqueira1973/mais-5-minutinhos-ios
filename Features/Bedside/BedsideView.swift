@@ -43,8 +43,10 @@ struct BedsideView: View {
     // Monta o layout 4C para o instante atual.
     // Entradas: data/hora atual. Saída: view.
     private func content(now: Date) -> some View {
-        // Opacidade do relógio: 0,42 em brilho baixo, 1,0 após toque (design system).
-        let clockDim = controller.isAwake ? 1.0 : (brightness <= 0.2 ? 0.42 : 0.85)
+        // LED sempre com a cor cheia: só o brilho da tela controla a luz, para ler a
+        // hora sem tocar (decisão de Alexandre no spike, diverge do design, que
+        // previa 0,42 em brilho baixo e 0,85 normal).
+        let clockDim = 1.0
         let info = color.opacity(controller.isAwake ? 0.9 : 0.6)
         return GeometryReader { proxy in
             let w = proxy.size.width
