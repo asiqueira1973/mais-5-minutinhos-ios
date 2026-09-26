@@ -13,3 +13,8 @@ A seção 26 exige todos os critérios de 8.1 a 8.8 verificados em iPhone físic
 | 8.7 Ajustes e temas | ✅ simulador | Tela 10.6 completa (prévia ao vivo, 4 temas com miniaturas, 5 cores, 24h, segundos, brilho com prévia, entrada automática, compra, sobre). Cadeado nos pagos → paywall. Testes da regra 11.7 e do tema/cor efetivos sem compra. Mudar a cor reagenda os alarmes para a apresentação do sistema usar a cor nova. **A ver no iPhone:** prévia do brilho ao arrastar o slider. |
 | 8.8 Compra única | ✅ testes + simulador | StoreKitTest com `MaisCincoMinutinhos.storekit`: produto carrega com preço, compra libera na hora, reembolso retira o acesso, restaurar sem compra não trava. Simulador: paywall completo (miniaturas, cores, sons, "Comprar por" + `displayPrice`), preço nos Ajustes, "Comprado" após compra. Liberar/retirar reconcilia sons (11.6) e reagenda a cor. **A verificar antes do envio:** compra real em sandbox/TestFlight; "Restaurar compra" em aparelho novo; paywall sem rede no iPhone (modo avião → 15.7). |
 | 10.10 Como usar | ✅ simulador | Copy 15.11 aprovada, link em Ajustes › Sobre. |
+
+## Submissão
+
+- 26/09/2026: build 1.0.0 (2), só iPhone, submetido à App Store ("Waiting for Review"). O build 1 saiu com iPad por engano e não foi usado.
+- **Em aberto:** o roteiro em aparelho acima foi feito só em parte (spike 8.1 e testes visuais). Rodar pelo TestFlight durante a revisão; se algo falhar, cancelar a submissão e enviar build 3.
