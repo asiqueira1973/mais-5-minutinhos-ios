@@ -75,3 +75,9 @@ Decisão: `customSoundsEnabled` = **true** (som próprio funciona no iOS 26.6.2)
 2. **O botão secundário (Soneca) usa `tintColor` como fundo.** Com `textColor` igual à cor, o texto ficou invisível (bug do spike, corrigido para `.black`). O design previa Soneca com fundo a 22% e texto na cor; na apresentação do sistema o resultado é fundo na cor e texto preto.
 3. **Volume segue o de toque (25.3).** Pelo spec, a tela 10.2 ganha uma dica, e o texto dela não existe na seção 15. **Copy definida por Alexandre (26/09/2026):** "O alarme toca no volume de toque do iPhone."
 4. Os textos do sistema ("slide to stop", "Show less") seguem o idioma do aparelho (o de teste está em inglês).
+
+## Decisões para o épico 8.5 tomadas durante o spike
+
+- **Regra 11.4, "aparelho em paisagem":** vale **de lado na horizontal (com suporte)** ou **deitado de costas na mesa (tela para cima)**. Decisão de Alexandre em 26/09/2026.
+- **Detecção da posição:** a maioria das pessoas usa o bloqueio de rotação, e com ele ligado `UIDevice.orientation` não informa a paisagem. A detecção usa o acelerômetro (CoreMotion, sem permissão). A interface do modo cabeceira é sempre forçada para paisagem (`requestGeometryUpdate`).
+- A prévia do modo cabeceira (layout 4C, tema LED) foi aprovada visualmente no iPhone às 12:57.
