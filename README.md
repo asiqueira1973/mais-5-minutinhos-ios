@@ -50,3 +50,13 @@ xcodebuild test -project MaisCincoMinutinhos.xcodeproj -scheme MaisCincoMinutinh
 AlarmKit só se valida em aparelho. O roteiro está em [`docs/spike-alarmkit.md`](docs/spike-alarmkit.md) e as pendências em [`docs/validacao.md`](docs/validacao.md); repita antes de cada envio à revisão (seção 22).
 
 Para ver as telas sem tocar alarme (só em Debug): `xcrun simctl launch booted com.dablab.mais5minutinhos -debugRinging YES` (tela 10.5) ou `-debugSnooze YES` (cabeceira em soneca).
+
+## Build para o TestFlight
+
+```bash
+xcodegen generate
+xcodebuild archive -project MaisCincoMinutinhos.xcodeproj -scheme MaisCincoMinutinhos -configuration Release -destination 'generic/platform=iOS' -archivePath build/MaisCincoMinutinhos.xcarchive -allowProvisioningUpdates
+xcodebuild -exportArchive -archivePath build/MaisCincoMinutinhos.xcarchive -exportPath build/export -exportOptionsPlist ExportOptions.plist -allowProvisioningUpdates
+```
+
+O `ExportOptions.plist` envia direto para o App Store Connect (`destination: upload`) com a conta logada no Xcode. **Antes de cada novo envio, aumente `CURRENT_PROJECT_VERSION` no `project.yml`**, porque a Apple recusa um número de build repetido. Histórico: 1.0.0 (1), enviado em 26/09/2026.
