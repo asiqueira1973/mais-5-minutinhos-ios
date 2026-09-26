@@ -63,7 +63,7 @@ Teste parcial em 26/09/2026, 12:38–12:40, com o app aberto:
 | Toca com app fechado, no silencioso, com botões na tela bloqueada | ✅ tocou às 12:45 com o app fechado e no silencioso. Tela bloqueada às 12:49: título + "5 Minutinhos", botão secundário grande na cor e **"slide to stop" do sistema** (ver divergências) |
 | Som é o arquivo do bundle (P1) | ✅ com o app aberto e com o app fechado no silencioso (iOS 26.6.2) |
 | App recebe `alerting` e mostra a tela em ≤ 1 s (P2) | ✅ 82 ms |
-| Parar na tela do app silencia em ≤ 1 s (P3) | ✅ parcial: **Soneca** na tela do app (sobre o modo cabeceira) cortou o som na hora; falta repetir com **Parar** |
+| Parar na tela do app silencia em ≤ 1 s (P3) | ✅ **Parar** e **Soneca** na tela do app cortaram o som na hora |
 | Soneca mostra contagem e volta a tocar depois de 5 min | ✅ contagem apareceu; falta confirmar se volta a tocar depois de 5 min |
 | Volume segue toque ou mídia (25.3) | ✅ segue o **volume de toque** (12:49: toque baixo e mídia alta → tocou baixo). Apertar o botão de volume durante o toque interrompe o alarme (comportamento do sistema) |
 
