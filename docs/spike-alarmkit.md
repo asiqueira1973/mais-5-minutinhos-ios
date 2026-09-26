@@ -54,6 +54,7 @@ Teste parcial em 26/09/2026, 12:38–12:40, com o app aberto:
 - O som ouvido foi o **bipe provisório** do bundle, e não o som padrão nem um bipe de erro.
 - A Live Activity da soneca aparece na tela bloqueada (print às 12:40): `zzz` + rótulo na cor, contagem regressiva grande (3:13) e botão "Parar" vermelho com texto preto, conforme o design (tela 9). Com mais de um alarme, o sistema empilha as atividades sob o nome "5 Minutinhos" (12:42: duas sonecas simultâneas, som próprio e som padrão).
 - O botão **Parar** da Live Activity (`StopAlarmIntent`) encerrou a soneca e a atividade sumiu da tela bloqueada.
+- `cancel(id:)` em todos os alarmes ("Cancelar todos") também remove as Live Activities de soneca em andamento. A exclusão e o toggle da seção 8.3 não deixam contagem órfã.
 - 999664D2 (bipe_digital.caf, agendado às 12:38:29 para 12:40) tocou em seguida, como esperado.
 
 | Critério 8.1 | Resultado |
