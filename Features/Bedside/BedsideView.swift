@@ -14,6 +14,8 @@ struct BedsideView: View {
     var brightness: Double = 0.30
     var position: DevicePosition = .other
     var nextAlarm: (time: String, day: String)?
+    // Hora do fim da soneca em andamento ("07:09"), ou nil (spec 8.6).
+    var snoozeUntil: String?
     // true enquanto um alarme toca por cima do modo (tela 10.5).
     var isRinging = false
     let onExit: () -> Void
@@ -107,6 +109,10 @@ struct BedsideView: View {
                 // Copy 15.5, mostrada por 10 s ao desconectar o carregador.
                 Label("O iPhone não está carregando", systemImage: "bolt.slash")
                     .font(.system(size: 15))
+            } else if let snoozeUntil {
+                // Estado "em soneca" do design (tela 4): `zzz` "Soneca até 07:09".
+                Label("Soneca até \(snoozeUntil)", systemImage: "zzz")
+                    .font(.system(size: 20, weight: .medium).monospacedDigit())
             } else if let nextAlarm {
                 Label(nextAlarm.time, systemImage: "alarm")
                     .font(.system(size: 28, weight: .medium).monospacedDigit())

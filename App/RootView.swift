@@ -20,6 +20,10 @@ struct RootView: View {
     // Posição do aparelho e carregador (regra 11.4) e última saída manual.
     @State private var device = DevicePositionMonitor()
     @State private var lastManualExit: Date?
+    // Fim de cada soneca em andamento (spec 8.6: "Soneca até 07:09"). O AlarmKit
+    // não informa a hora do fim; ela é calculada quando o alarme entra em
+    // `countdown`: agora + `soneca_minutos` do alarme.
+    @State private var snoozes: [UUID: Date] = [:]
 
     private var prefs: Preferencias? { preferences.first }
     private var cor: CorRelogio { prefs?.cor_relogio ?? .vermelho }
@@ -39,6 +43,7 @@ struct RootView: View {
                     brightness: prefs?.brilho_cabeceira ?? 0.30,
                     position: device.position,
                     nextAlarm: nextAlarmInfo(),
+                    snoozeUntil: snoozeText(),
                     isRinging: alertingID != nil,
                     onExit: {
                         // Saída manual: a entrada automática espera 10 min (regra 11.4).
@@ -52,7 +57,9 @@ struct RootView: View {
             let alarme = alarms.first { $0.id == item.id }
             RingingView(
                 title: Mais5Metadata(rotulo: alarme?.rotulo, cor: cor.rawValue).displayTitle,
+                theme: prefs?.tema_relogio ?? .ledClassico,
                 color: cor.color,
+                is24h: is24h,
                 hasSnooze: alarme?.soneca_ativa ?? true,
                 onSnooze: { try? AlarmScheduler.shared.snooze(id: item.id); alertingID = nil },
                 onStop: { try? AlarmScheduler.shared.stop(id: item.id); alertingID = nil }
@@ -67,6 +74,9 @@ struct RootView: View {
         .onAppear { controller.context = context }
         .task { await observeAlarmKit() }
         .task { await checkAutoEntry() }
+        #if DEBUG
+        .onAppear { applyDebugLaunchArguments() }
+        #endif
         .onChange(of: scenePhase, initial: true) { _, phase in
             if phase == .active {
                 BedsideController.restorePendingBrightness()
@@ -92,12 +102,34 @@ struct RootView: View {
     private func observeAlarmKit() async {
         for await states in AlarmScheduler.shared.observe() {
             alertingID = states.first { $0.value == .alerting }?.key
+            trackSnoozes(states)
             let ids = Set(states.keys)
             if !knownIDs.subtracting(ids).isEmpty {
                 await controller.reconcile(in: context)
             }
             knownIDs = ids
         }
+    }
+
+    // Atualiza o fim das sonecas: registra quando um alarme entra em `countdown`
+    // e esquece quando sai (volta a tocar, é parado ou cancelado).
+    // Entradas: estado de cada alarme. Saída: nenhuma.
+    private func trackSnoozes(_ states: [UUID: Alarm.State]) {
+        for (id, state) in states where state == .countdown && snoozes[id] == nil {
+            let minutes = alarms.first { $0.id == id }?.soneca_minutos ?? 9
+            snoozes[id] = Date.now.addingTimeInterval(TimeInterval(minutes * 60))
+        }
+        for id in snoozes.keys where states[id] != .countdown {
+            snoozes[id] = nil
+        }
+    }
+
+    // "Soneca até 07:09" da soneca que termina primeiro (spec 8.6), ou nil.
+    // Entradas: nenhuma. Saída: hora formatada conforme `formato_24h`.
+    private func snoozeText() -> String? {
+        guard let end = snoozes.values.min() else { return nil }
+        let parts = Calendar.current.dateComponents([.hour, .minute], from: end)
+        return ClockFormat.text(hora: parts.hour ?? 0, minuto: parts.minute ?? 0, is24h: is24h)
     }
 
     // A cada segundo, com o app na frente e fora do modo cabeceira, avalia a
@@ -141,6 +173,32 @@ struct RootView: View {
         )
     }
 }
+
+#if DEBUG
+extension RootView {
+    // SÓ DEPURAÇÃO (não entra na build da loja): simula estados para conferir as
+    // telas no simulador sem tocar alarme de verdade.
+    // `-debugRinging YES` abre a 10.5; `-debugSnooze YES` abre a cabeceira em soneca.
+    // Entradas: argumentos de abertura. Saída: nenhuma.
+    fileprivate func applyDebugLaunchArguments() {
+        let defaults = UserDefaults.standard
+        // Espera a primeira leitura do AlarmKit, que zeraria o estado simulado.
+        if defaults.bool(forKey: "debugRinging") {
+            Task {
+                try? await Task.sleep(for: .seconds(1))
+                alertingID = UUID()
+            }
+        }
+        if defaults.bool(forKey: "debugSnooze") {
+            showsBedside = true
+            Task {
+                try? await Task.sleep(for: .seconds(1))
+                snoozes[UUID()] = Date.now.addingTimeInterval(9 * 60)
+            }
+        }
+    }
+}
+#endif
 
 // Envelope identificável para abrir a 10.5 pelo id do alarme.
 struct RingingItem: Identifiable {

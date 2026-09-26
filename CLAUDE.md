@@ -42,7 +42,7 @@ Core/Alarm/             + AlarmScheduler (única porta para o AlarmKit), Reconci
 Core/Sound/             SoundCatalog (sons, grátis/pagos, customSoundsEnabled, som efetivo), SoundPreviewPlayer (prévia ≤ 5 s, .playback)
 App/RootView            lista + cabeceira por cima + 10.5 + 10.8; observa `alarmUpdates` e reconcilia ao voltar ao primeiro plano
 Features/Alarms/        AlarmListView (10.1), AlarmEditView (10.2), PermissionDeniedView (10.8), AlarmController (ordem AlarmKit → SwiftData)
-Features/Ringing/       RingingView (10.5, opção 5A): versão inicial, validada no 8.6
+Features/Ringing/       RingingView (10.5, opção 5A): proporções do design em pontos (retrato 100/430/197, paisagem 44/200/97), relógio no tema
 Features/Settings/      ClockPalette (cores do relógio); Ajustes no 8.7
 Features/SoundPicker/   SoundPickerView (10.3)
 Features/Paywall/       PaywallView (10.7): layout pronto; compra e restauração no 8.8
@@ -70,6 +70,8 @@ xcrun devicectl device install app --device <id> build/DerivedData/Build/Product
 - **SF Symbols:** `alarm.slash` não existe; a 10.8 compõe `alarm` + `line.diagonal`. Confira símbolos novos em `/System/Library/CoreServices/CoreGlyphs.bundle/Contents/Resources/name_availability.plist`.
 - **Toggle na linha da lista:** não ponha `onTapGesture` na linha inteira, porque ele captura o toque do toggle. Só a área de hora e texto é botão de edição.
 - **Closure no `set` de `Binding`:** passar uma função `@MainActor` fez o compilador (Xcode 26.1.1) travar. Capture só valores `Sendable` (controlador `@MainActor` + UUID).
+- **Ganchos de depuração** (só em DEBUG): `xcrun simctl launch <sim> com.dablab.mais5minutinhos -debugRinging YES` abre a 10.5; `-debugSnooze YES` abre a cabeceira em soneca. Sem tocar alarme de verdade.
+- **"Soneca até":** o AlarmKit não informa quando a soneca termina. A `RootView` calcula a hora quando o alarme entra em `countdown` (agora + `soneca_minutos`); se o app for reaberto no meio da soneca, a hora não aparece.
 - **Simulador:** o toque sintético curto não liga `Toggle`. Use `duration: 0.15`.
 - **Abertura do app:** o `UILaunchScreen` usa a cor `LaunchBackground` (preta), para não haver clarão branco à noite.
 - **Data em pt-BR:** use `Locale(identifier: "pt_BR")` nos textos de data. O aparelho de teste está em inglês.

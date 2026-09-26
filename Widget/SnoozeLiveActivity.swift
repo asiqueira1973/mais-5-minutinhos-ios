@@ -79,8 +79,11 @@ private struct CountdownText: View {
     var body: some View {
         switch state.mode {
         case .countdown(let countdown):
-            // O sistema atualiza o timer sozinho; a view não precisa redesenhar.
-            Text(timerInterval: Date.now...countdown.fireDate, countsDown: true)
+            // O sistema atualiza o timer sozinho. O intervalo parte do início da
+            // contagem informado pelo AlarmKit; se as datas vierem invertidas, um
+            // intervalo vazio evita derrubar o widget (`...` exige início ≤ fim).
+            let start = min(countdown.startDate, countdown.fireDate)
+            Text(timerInterval: start...countdown.fireDate, countsDown: true)
         case .paused:
             Text("Pausado")
         case .alert:
