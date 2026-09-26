@@ -44,6 +44,7 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSAlarmKitUsageDescription: "O Mais 5 Minutinhos usa alarmes para tocar na hora certa, mesmo com o iPhone no silencioso."  # copy 15.9
         NSSupportsLiveActivities: true        # Live Activity da soneca (spec 4)
+        ITSAppUsesNonExemptEncryption: false  # só HTTPS/StoreKit da Apple; sem criptografia própria (App Encryption Documentation)
         UILaunchScreen:
           UIColorName: LaunchBackground       # preto: abertura sem clarão à noite (princípio 0.3)
         UIApplicationSupportsIndirectInputEvents: true

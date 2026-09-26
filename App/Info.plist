@@ -20,6 +20,8 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSAlarmKitUsageDescription</key>
 	<string>O Mais 5 Minutinhos usa alarmes para tocar na hora certa, mesmo com o iPhone no silencioso.</string>
 	<key>NSSupportsLiveActivities</key>

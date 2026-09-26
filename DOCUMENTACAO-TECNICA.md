@@ -182,6 +182,7 @@ A raiz é `App/RootView.swift`. Ela observa o AlarmKit, reconcilia, avalia a ent
   - O slider de brilho mostra a prévia na tela enquanto arrasta.
   - Mudar a cor reagenda os alarmes.
   - "Comprar" abre o paywall; "Restaurar compra" chama `PurchaseStore.restore()`; com compra, aparece "Comprado".
+  - "Privacidade" abre a Política de Privacidade da Dab Lab (`AppLinks.privacyPolicy`), exigida dentro do app pela Guideline 5.1.1.
 - **10.7:**
   - "Comprar por R$ 19,90" usa o `displayPrice`.
   - Sem rede: botão desabilitado e copy 15.7.
@@ -208,6 +209,7 @@ A raiz é `App/RootView.swift`. Ela observa o AlarmKit, reconcilia, avalia a ent
 | 14 | Comportamento com reembolso para tema/cor não definido | Tema/cor pagos caem para LED/vermelho sem alterar `preferencias` | Mesmo tratamento dos sons (11.6), princípio 0.5. |
 | 15 | — | Abertura do app (`UILaunchScreen`) em preto | Evita clarão branco à noite (princípio 0.3). |
 | 16 | — | "Restaurar compra" sem nada a restaurar não mostra mensagem | A seção 15 não tem copy para isso. |
+| 18 | — | `ITSAppUsesNonExemptEncryption = NO` no Info.plist | Só frameworks da Apple; evita o "Missing Compliance" a cada build. |
 | 17 | — | Botão de volume durante o toque interrompe o alarme | Comportamento do sistema observado no spike; o app não controla. |
 
 ### Resultado do spike 8.1 (resumo; completo em `docs/spike-alarmkit.md`)

@@ -101,11 +101,20 @@ private struct SettingsForm: View {
             }
             Section("Sobre") {
                 NavigationLink("Como usar") { HowToUseView(tint: tint) }
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Privacidade")
-                    Text("Nenhum dado sai do seu iPhone")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                // Abre a Política de Privacidade (Guideline 5.1.1: acessível no app).
+                Link(destination: AppLinks.privacyPolicy) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Privacidade").foregroundStyle(.primary)
+                            Text("Nenhum dado sai do seu iPhone")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "arrow.up.right")
+                            .font(.footnote)
+                            .foregroundStyle(.tertiary)
+                    }
                 }
                 LabeledContent("Versão", value: Self.version)
             }
