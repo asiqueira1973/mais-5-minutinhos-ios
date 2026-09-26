@@ -55,8 +55,15 @@ struct AlarmEditView: View {
                         TextField("Alarme", text: labelBinding)
                             .multilineTextAlignment(.trailing)
                     }
-                    // A escolha do som (tela 10.3) entra no épico 8.4.
-                    LabeledContent("Som", value: SoundCatalog.option(draft.som).name)
+                    NavigationLink {
+                        SoundPickerView(
+                            selection: $draft.som,
+                            premiumUnlocked: controller.premiumUnlocked,
+                            tint: tint
+                        )
+                    } label: {
+                        LabeledContent("Som", value: SoundCatalog.option(draft.som).name)
+                    }
                 } footer: {
                     // Resposta da pergunta 25.3 (spike 8.1): o volume segue o de toque.
                     Text("O alarme toca no volume de toque do iPhone.")

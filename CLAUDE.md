@@ -19,6 +19,8 @@ Despertador de cabeceira para iPhone: à noite, relógio grande e escuro; de man
 - `brilho_cabeceira` default 0,30. LED do modo cabeceira sempre com a cor cheia (o brilho da tela controla a luz).
 - Modo cabeceira automático (11.4): de lado na horizontal **ou** deitado de costas (tela para cima). Posição detectada pelo acelerômetro, porque funciona com o bloqueio de rotação ligado.
 - Dica de volume na tela 10.2: "O alarme toca no volume de toque do iPhone."
+- Sons próprios: os 7 são **sintetizados por código** (`scripts/make-sounds.py`) e foram aprovados como sons do app pela direção vintage (resposta da 25.2).
+- Som pago sem compra na 10.3: toca a prévia **e** abre o paywall, sem escolher o som.
 - Erro genérico do AlarmKit (a seção 15 não define): título "Erro no alarme", texto "Não foi possível salvar. Tente de novo.", botão "OK".
 - Permissão negada ao salvar: o alarme é gravado **inativo** e abre a 10.8. `maximumLimitReached`: gravado inativo + copy 15.6. Outro erro: nada é gravado e a sheet continua aberta.
 
@@ -37,12 +39,13 @@ Core/Persistence/       DatabaseEnums, SchemaV1 (Alarme, Preferencias), Persiste
 Core/Sound/, Core/Purchase/          épicos 8.4 e 8.8
 Features/Bedside/       LEDClockView (7 segmentos em Canvas), BedsideController (brilho/idle/orientação), BedsideView (4C)
 Core/Alarm/             + AlarmScheduler (única porta para o AlarmKit), Reconciliation (plano puro da 11.6), NextAlarm/ClockFormat, Weekdays
-Core/Sound/             SoundCatalog (sons, grátis/pagos, customSoundsEnabled, som efetivo)
+Core/Sound/             SoundCatalog (sons, grátis/pagos, customSoundsEnabled, som efetivo), SoundPreviewPlayer (prévia ≤ 5 s, .playback)
 App/RootView            lista + cabeceira por cima + 10.5 + 10.8; observa `alarmUpdates` e reconcilia ao voltar ao primeiro plano
 Features/Alarms/        AlarmListView (10.1), AlarmEditView (10.2), PermissionDeniedView (10.8), AlarmController (ordem AlarmKit → SwiftData)
 Features/Ringing/       RingingView (10.5, opção 5A): versão inicial, validada no 8.6
 Features/Settings/      ClockPalette (cores do relógio); Ajustes no 8.7
-Features/SoundPicker, Paywall   épicos 8.4 e 8.8
+Features/SoundPicker/   SoundPickerView (10.3)
+Features/Paywall/       PaywallView (10.7): layout pronto; compra e restauração no 8.8
 Resources/Sounds/       .caf (Linear PCM 44,1 kHz mono ≤ 30 s) + LICENSES.md
 Widget/                 extension com a Live Activity da soneca (AlarmAttributes<Mais5Metadata>)
 Tests/                  Swift Testing (seção 22)
