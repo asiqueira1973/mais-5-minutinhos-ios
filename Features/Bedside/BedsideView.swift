@@ -30,7 +30,7 @@ struct BedsideView: View {
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 1)) { timeline in
-            content(now: timeline.date)
+            content(now: DebugClock.display(timeline.date))
         }
         .background(Color.black.ignoresSafeArea())
         .contentShape(Rectangle())

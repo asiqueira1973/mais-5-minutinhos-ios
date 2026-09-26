@@ -96,6 +96,10 @@ final class PurchaseStore {
                 unlocked = true
             }
         }
+        #if DEBUG
+        // SÓ DEPURAÇÃO: `-debugUnlocked YES` libera tudo para os prints da App Store.
+        if UserDefaults.standard.bool(forKey: "debugUnlocked") { unlocked = true }
+        #endif
         isUnlocked = unlocked
     }
 

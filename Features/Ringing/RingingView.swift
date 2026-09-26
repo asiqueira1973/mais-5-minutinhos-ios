@@ -58,7 +58,7 @@ struct RingingView: View {
     // Entradas: se está em paisagem. Saída: view.
     private func header(isLandscape: Bool) -> some View {
         TimelineView(.periodic(from: .now, by: 1)) { timeline in
-            let parts = Calendar.current.dateComponents([.hour, .minute], from: timeline.date)
+            let parts = Calendar.current.dateComponents([.hour, .minute], from: DebugClock.display(timeline.date))
             let time = ClockFormat.parts(hora: parts.hour ?? 0, minuto: parts.minute ?? 0, is24h: is24h)
             let clock = ClockView(theme: theme, time: time.time, suffix: time.suffix, color: color,
                                   alignment: isLandscape ? .leading : .center)

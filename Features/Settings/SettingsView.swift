@@ -129,7 +129,7 @@ private struct SettingsForm: View {
     // Prévia ao vivo: retângulo #000, altura 150, borda 1 pt #38383A, raio 12 (design).
     private var preview: some View {
         TimelineView(.periodic(from: .now, by: 1)) { timeline in
-            let parts = Calendar.current.dateComponents([.hour, .minute, .second], from: timeline.date)
+            let parts = Calendar.current.dateComponents([.hour, .minute, .second], from: DebugClock.display(timeline.date))
             let time = ClockFormat.parts(hora: parts.hour ?? 0, minuto: parts.minute ?? 0, is24h: prefs.formato_24h)
             ClockView(
                 theme: Entitlements.effective(prefs.tema_relogio, unlocked: premiumUnlocked),

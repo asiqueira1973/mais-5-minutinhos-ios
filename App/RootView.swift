@@ -195,22 +195,41 @@ struct RootView: View {
 extension RootView {
     // SÓ DEPURAÇÃO (não entra na build da loja): simula estados para conferir as
     // telas no simulador sem tocar alarme de verdade.
-    // `-debugRinging YES` abre a 10.5; `-debugSnooze YES` abre a cabeceira em soneca.
+    // `-debugRinging YES` abre a 10.5; `-debugSnooze YES` abre a cabeceira em soneca;
+    // `-debugBedside YES` abre a cabeceira; `-debugSeedAlarms YES` cria alarmes de exemplo (prints da App Store) se a
+    // lista estiver vazia.
     // Entradas: argumentos de abertura. Saída: nenhuma.
     fileprivate func applyDebugLaunchArguments() {
         let defaults = UserDefaults.standard
+        if defaults.bool(forKey: "debugSeedAlarms"), alarms.isEmpty {
+            let samples: [(Int, Int, [Int], String?, Bool)] = [
+                (5, 45, [2, 3, 4, 5, 6], "Academia", true),
+                (6, 30, [2, 4, 6], "Natação", true),
+                (7, 0, [1, 7], "Corrida", true),
+                (9, 0, [], nil, false),
+            ]
+            for (hora, minuto, dias, rotulo, ativo) in samples {
+                context.insert(Alarme(hora: hora, minuto: minuto, dias_repeticao: dias, rotulo: rotulo, ativo: ativo))
+            }
+            try? context.save()
+        }
         // Espera a primeira leitura do AlarmKit, que zeraria o estado simulado.
         if defaults.bool(forKey: "debugRinging") {
             Task {
                 try? await Task.sleep(for: .seconds(1))
-                alertingID = UUID()
+                // Usa um alarme existente (mostra o rótulo), senão um id qualquer.
+                // O alarme da hora fixada em `-debugClockTime`, senão o primeiro com rótulo.
+                let shown = Calendar.current.dateComponents([.hour, .minute], from: DebugClock.display(.now))
+                alertingID = (alarms.first { $0.hora == shown.hour && $0.minuto == shown.minute }
+                    ?? alarms.first { $0.rotulo != nil })?.id ?? UUID()
             }
         }
+        if defaults.bool(forKey: "debugBedside") { showsBedside = true }
         if defaults.bool(forKey: "debugSnooze") {
             showsBedside = true
             Task {
                 try? await Task.sleep(for: .seconds(1))
-                snoozes[UUID()] = Date.now.addingTimeInterval(9 * 60)
+                snoozes[UUID()] = DebugClock.display(.now).addingTimeInterval(9 * 60)
             }
         }
     }
