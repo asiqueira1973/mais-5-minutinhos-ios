@@ -31,6 +31,8 @@ A ordem importa: as 3 primeiras aparecem na busca da App Store.
 | 9 | PRINT | Sons de despertador de verdade. | Campainha, sino, rádio-relógio, pássaros e mais. | `03-sons.png` |
 | 10 | CENA | Sem conta. Sem anúncios. Sem assinatura. | Pague uma vez, use para sempre. Nada sai do seu iPhone. | Cena E (Gemini) |
 
+**Para o IAP (não entra na vitrine):** `11-paywall.png` é o screenshot de revisão do produto. `12-paywall-sem-rede.png` mostra o estado da copy 15.7.
+
 **Prints reserva:** `02-editar.png`, `06-cabeceira-flip-ambar.png`, `07-cabeceira-fino-azul.png`, `08-cabeceira-negrito-verde.png` e `09-cabeceira-soneca-led.png` ("Soneca até 06:48"). Qualquer um pode substituir um PRINT acima.
 
 **Conferir antes de publicar:**

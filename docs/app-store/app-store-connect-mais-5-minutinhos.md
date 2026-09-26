@@ -145,7 +145,7 @@ Dúvidas sobre privacidade: alexandre@dablab.com.br
 | **Preço** | R$ 19,90 (regra 11.7) |
 | **Nome de exibição** (≤30) | `Mais 5 Minutinhos completo` |
 | **Descrição** (≤30) | `Todos os temas, cores e sons` |
-| **Review screenshot** | print do paywall: Ajustes › Comprar |
+| **Review screenshot** | `docs/app-store/prints/11-paywall.png` (paywall com "Comprar por R$ 19,90", 1320 × 2868) |
 | **Review notes do IAP** | `Libera os temas, cores e sons extras. Alarmes e modo cabeceira são grátis. Abrir em Ajustes > Comprar.` |
 | **Family Sharing** | desligado (igual ao `.storekit` local) |
 
