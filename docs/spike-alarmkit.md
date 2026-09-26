@@ -5,9 +5,9 @@ Status: **aguardando teste em aparelho físico**
 | Campo | Valor |
 |---|---|
 | Aparelho | iPhone 13 mini (iPhone14,4) |
-| Versão do iOS | _preencher_ |
+| Versão do iOS | 26.6.2 |
 | Xcode / SDK | Xcode 26.1.1 (17B100) / iOS SDK 26.1 |
-| Data do teste | _preencher_ |
+| Data do teste | 26/09/2026 |
 
 ## Premissa P4: assinaturas conferidas no SDK instalado (26/09/2026)
 
@@ -47,13 +47,18 @@ No app, os horários do log aparecem com milissegundos, para medir os limites de
 
 ## Resultado
 
-_A preencher depois do teste._
+Teste parcial em 26/09/2026, 12:38–12:40, com o app aberto:
+
+- FA23CD52: `alerting` às 12:39:00,047; tela de teste exibida às 12:39:00,129 (**82 ms**).
+- `countdown(id:)` chamado às 12:39:10,757; estado `countdown` às 12:39:10,777 (**20 ms**).
+- O som ouvido foi o **bipe provisório** do bundle, e não o som padrão nem um bipe de erro.
+- 999664D2 (bipe_digital.caf, agendado às 12:38:29 para 12:40) tocou em seguida, como esperado.
 
 | Critério 8.1 | Resultado |
 |---|---|
 | Toca com app fechado, no silencioso, com botões na tela bloqueada | |
-| Som é o arquivo do bundle (P1) | |
-| App recebe `alerting` e mostra a tela em ≤ 1 s (P2) | |
+| Som é o arquivo do bundle (P1) | ✅ com o app aberto (iOS 26.6.2); falta confirmar com o app fechado |
+| App recebe `alerting` e mostra a tela em ≤ 1 s (P2) | ✅ 82 ms |
 | Parar na tela do app silencia em ≤ 1 s (P3) | |
 | Soneca mostra contagem e volta a tocar depois de 5 min | |
 | Volume segue toque ou mídia (25.3) | |
