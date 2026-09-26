@@ -1,6 +1,6 @@
 # Spike técnico AlarmKit (épico 8.1)
 
-Status: **aprovado** (falta só confirmar a volta da soneca depois de 5 min)
+Status: **aprovado em 26/09/2026**. Todos os critérios de 8.1 verificados no iPhone 13 mini com iOS 26.6.2.
 
 | Campo | Valor |
 |---|---|
@@ -64,7 +64,7 @@ Teste parcial em 26/09/2026, 12:38–12:40, com o app aberto:
 | Som é o arquivo do bundle (P1) | ✅ com o app aberto e com o app fechado no silencioso (iOS 26.6.2) |
 | App recebe `alerting` e mostra a tela em ≤ 1 s (P2) | ✅ 82 ms |
 | Parar na tela do app silencia em ≤ 1 s (P3) | ✅ **Parar** e **Soneca** na tela do app cortaram o som na hora |
-| Soneca mostra contagem e volta a tocar depois de 5 min | ✅ contagem apareceu; falta confirmar se volta a tocar depois de 5 min |
+| Soneca mostra contagem e volta a tocar depois de 5 min | ✅ contagem na tela bloqueada; no modo cabeceira, Soneca → o alarme voltou a tocar 5 min depois e a tela 10.5 reapareceu sozinha |
 | Volume segue toque ou mídia (25.3) | ✅ segue o **volume de toque** (12:49: toque baixo e mídia alta → tocou baixo). Apertar o botão de volume durante o toque interrompe o alarme (comportamento do sistema) |
 
 Decisão: `customSoundsEnabled` = **true** (som próprio funciona no iOS 26.6.2).
