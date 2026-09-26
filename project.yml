@@ -40,6 +40,8 @@ targets:
       path: App/Info.plist
       properties:
         CFBundleDisplayName: "5 Minutinhos"   # nome sob o ícone (assunção 24.2)
+        CFBundleShortVersionString: $(MARKETING_VERSION)   # "Versão" nos Ajustes (10.6)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSAlarmKitUsageDescription: "O Mais 5 Minutinhos usa alarmes para tocar na hora certa, mesmo com o iPhone no silencioso."  # copy 15.9
         NSSupportsLiveActivities: true        # Live Activity da soneca (spec 4)
         UILaunchScreen:
@@ -73,6 +75,8 @@ targets:
       path: Widget/Info.plist
       properties:
         CFBundleDisplayName: "5 Minutinhos"
+        CFBundleShortVersionString: $(MARKETING_VERSION)   # a extensão precisa ter a mesma versão do app
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:

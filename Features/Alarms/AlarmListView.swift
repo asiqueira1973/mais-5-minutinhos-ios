@@ -58,6 +58,18 @@ struct AlarmListView: View {
             }
             .navigationTitle("Alarmes")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink {
+                        SettingsView(
+                            premiumUnlocked: controller.premiumUnlocked,
+                            onRestore: { Task { await controller.restorePurchase() } },
+                            onColorChange: { Task { await controller.refreshPresentation(in: context) } }
+                        )
+                    } label: {
+                        Image(systemName: "gearshape")
+                    }
+                    .accessibilityLabel("Ajustes")
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         editing = .new

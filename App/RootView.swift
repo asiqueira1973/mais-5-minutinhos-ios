@@ -26,7 +26,9 @@ struct RootView: View {
     @State private var snoozes: [UUID: Date] = [:]
 
     private var prefs: Preferencias? { preferences.first }
-    private var cor: CorRelogio { prefs?.cor_relogio ?? .vermelho }
+    // Cor e tema efetivos: pagos sem compra válida caem para os grátis (regra 11.7).
+    private var cor: CorRelogio { Entitlements.effective(prefs?.cor_relogio ?? .vermelho, unlocked: controller.premiumUnlocked) }
+    private var theme: TemaRelogio { Entitlements.effective(prefs?.tema_relogio ?? .ledClassico, unlocked: controller.premiumUnlocked) }
     private var is24h: Bool { prefs?.formato_24h ?? true }
 
     var body: some View {
@@ -36,7 +38,7 @@ struct RootView: View {
         .overlay {
             if showsBedside {
                 BedsideView(
-                    theme: prefs?.tema_relogio ?? .ledClassico,
+                    theme: theme,
                     color: cor.color,
                     is24h: is24h,
                     showSeconds: prefs?.mostrar_segundos ?? false,
@@ -57,7 +59,7 @@ struct RootView: View {
             let alarme = alarms.first { $0.id == item.id }
             RingingView(
                 title: Mais5Metadata(rotulo: alarme?.rotulo, cor: cor.rawValue).displayTitle,
-                theme: prefs?.tema_relogio ?? .ledClassico,
+                theme: theme,
                 color: cor.color,
                 is24h: is24h,
                 hasSnooze: alarme?.soneca_ativa ?? true,

@@ -134,6 +134,22 @@ final class AlarmController {
         try? context.save()
     }
 
+    // Reagenda os alarmes ativos que estão só agendados, para a apresentação do
+    // sistema usar a cor nova (spec 8.6: cor = `cor_relogio`). Não mexe em alarme
+    // tocando ou em soneca. Entradas: contexto. Saída: nenhuma.
+    func refreshPresentation(in context: ModelContext) async {
+        guard scheduler.authorizationState == .authorized else { return }
+        let states = scheduler.systemStates()
+        let cor = clockColor(in: context)
+        let alarmes = (try? context.fetch(FetchDescriptor<Alarme>())) ?? []
+        for alarme in alarmes where alarme.ativo && states[alarme.id] == .scheduled {
+            try? await scheduler.schedule(alarme, cor: cor, premiumUnlocked: premiumUnlocked)
+        }
+    }
+
+    // Restaurar compra: entra no épico 8.8. Entradas: nenhuma. Saída: nenhuma.
+    func restorePurchase() async {}
+
     // Grava o rascunho na linha existente ou cria uma nova com o mesmo UUID.
     // Entradas: rascunho, estado ativo final, linha em edição e contexto. Saída: nenhuma.
     private func persist(_ draft: AlarmDraft, active: Bool, editing: Alarme?, in context: ModelContext) {
@@ -159,7 +175,9 @@ final class AlarmController {
 
     // Cor do relógio atual (preferências, seção 7.2), usada na apresentação do sistema.
     // Entradas: contexto. Saída: cor; `vermelho` se as preferências não puderem ser lidas.
+    // Pago sem compra válida cai para a cor grátis (regra 11.7, `Entitlements`).
     private func clockColor(in context: ModelContext) -> CorRelogio {
-        (try? Persistence.ensurePreferences(in: context))?.cor_relogio ?? .vermelho
+        let saved = (try? Persistence.ensurePreferences(in: context))?.cor_relogio ?? .vermelho
+        return Entitlements.effective(saved, unlocked: premiumUnlocked)
     }
 }
