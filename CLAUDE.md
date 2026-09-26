@@ -85,4 +85,5 @@ xcrun devicectl device install app --device <id> build/DerivedData/Build/Product
 - **"Soneca até":** o AlarmKit não informa quando a soneca termina. A `RootView` calcula a hora quando o alarme entra em `countdown` (agora + `soneca_minutos`); se o app for reaberto no meio da soneca, a hora não aparece.
 - **Simulador:** o toque sintético curto não liga `Toggle`. Use `duration: 0.15`.
 - **Abertura do app:** o `UILaunchScreen` usa a cor `LaunchBackground` (preta), para não haver clarão branco à noite.
+- **Só iPhone:** `TARGETED_DEVICE_FAMILY: "1"` precisa estar em **cada target** do `project.yml`. No nível do projeto, o XcodeGen sobrescreve com "1,2" e o build sai com iPad (aconteceu no build 1). Confira `UIDeviceFamily` no archive antes de enviar.
 - **Data em pt-BR:** use `Locale(identifier: "pt_BR")` nos textos de data. O aparelho de teste está em inglês.
