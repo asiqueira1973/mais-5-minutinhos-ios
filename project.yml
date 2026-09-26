@@ -92,6 +92,9 @@ targets:
     platform: iOS
     sources:
       - path: Tests
+      # Configuração StoreKit local usada pelos testes da compra (8.8).
+      - path: MaisCincoMinutinhos.storekit
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.dablab.mais5minutinhos.tests
@@ -107,6 +110,8 @@ schemes:
         MaisCincoMinutinhosTests: [test]
     run:
       config: Debug
+      # StoreKit local para testar compra/restauração/reembolso no simulador (8.8).
+      storeKitConfiguration: MaisCincoMinutinhos.storekit
     test:
       config: Debug
       targets:

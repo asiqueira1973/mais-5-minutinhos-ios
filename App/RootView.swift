@@ -12,6 +12,8 @@ struct RootView: View {
     @Query private var alarms: [Alarme]
 
     @State private var controller = AlarmController()
+    // Compra única (épico 8.8): fonte do desbloqueio, disponível para todas as telas.
+    @State private var store = PurchaseStore()
     @State private var showsBedside = false
     // Alarme tocando agora, lido de `alarmUpdates` (premissa P2).
     @State private var alertingID: UUID?
@@ -71,8 +73,20 @@ struct RootView: View {
             PermissionDeniedView(tint: cor.color)
         }
         .alert(item: $controller.alert) { AlarmAlerts.alert(for: $0) }
+        .environment(store)
         .tint(cor.color)
         .preferredColorScheme(.dark)
+        .onAppear { store.start() }
+        // Compra, restauração ou reembolso: libera ou retira na hora, sem reiniciar,
+        // e reagenda os alarmes com o som e a cor efetivos (critérios de 8.8, 11.6).
+        .onChange(of: store.isUnlocked, initial: true) { _, unlocked in
+            guard controller.premiumUnlocked != unlocked else { return }
+            controller.premiumUnlocked = unlocked
+            Task {
+                await controller.reconcile(in: context)
+                await controller.refreshPresentation(in: context)
+            }
+        }
         .onAppear { controller.context = context }
         .task { await observeAlarmKit() }
         .task { await checkAutoEntry() }

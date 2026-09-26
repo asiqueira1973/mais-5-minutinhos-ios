@@ -12,6 +12,7 @@ struct AlarmListView: View {
     let onSleep: () -> Void
 
     @Environment(\.modelContext) private var context
+    @Environment(PurchaseStore.self) private var store
     // Critério de 8.3: ordenada por hora, depois minuto.
     @Query(sort: [SortDescriptor(\Alarme.hora), SortDescriptor(\Alarme.minuto)]) private var alarms: [Alarme]
 
@@ -62,7 +63,7 @@ struct AlarmListView: View {
                     NavigationLink {
                         SettingsView(
                             premiumUnlocked: controller.premiumUnlocked,
-                            onRestore: { Task { await controller.restorePurchase() } },
+                            onRestore: { Task { await store.restore() } },
                             onColorChange: { Task { await controller.refreshPresentation(in: context) } }
                         )
                     } label: {

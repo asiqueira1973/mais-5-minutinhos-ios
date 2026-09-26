@@ -1,0 +1,31 @@
+{
+  "identifier" : "MAIS5MINUTINHOS-STOREKIT-CONFIG",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "19.90",
+      "familyShareable" : false,
+      "internalID" : "MAIS5MINUTINHOS-COMPLETO",
+      "localizations" : [
+        {
+          "description" : "Todos os temas, cores e sons. Pague uma vez, use para sempre.",
+          "displayName" : "Mais 5 Minutinhos completo",
+          "locale" : "pt_BR"
+        }
+      ],
+      "productID" : "com.dablab.mais5minutinhos.completo",
+      "referenceName" : "Mais 5 Minutinhos completo (compra única)",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_locale" : "pt_BR",
+    "_storefront" : "BRA",
+    "_storeKitErrors" : []
+  },
+  "subscriptionGroups" : [],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

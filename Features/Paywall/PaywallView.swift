@@ -1,14 +1,17 @@
 import SwiftUI
 
 // Tela 10.7 — Paywall (sheet, detent large). O que a compra libera (regra 11.7),
-// copy 15.10, comprar e restaurar (design system tela 7).
-// Versão do 8.4: conteúdo e layout. Compra, restauração, preço do StoreKit e
-// erro sem rede (15.7) entram no épico 8.8.
-// Entradas: cor do relógio.
+// copy 15.10, comprar pelo preço do StoreKit, restaurar, e erro sem rede 15.7
+// (design system tela 7, épico 8.8). Fecha sozinho quando a compra é liberada.
+// Entradas: cor do relógio. Lê o `PurchaseStore` do ambiente.
 struct PaywallView: View {
     let tint: Color
 
+    @Environment(PurchaseStore.self) private var store
     @Environment(\.dismiss) private var dismiss
+
+    // Uma cor por miniatura de tema, como no design ("cada uma numa cor").
+    private static let thumbnailColors: [CorRelogio] = [.vermelho, .ambar, .verde, .azul]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -27,13 +30,14 @@ struct PaywallView: View {
                 .accessibilityLabel("Fechar")
             }
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 20) {
                     // Copy 15.10.
                     Text("Mais 5 Minutinhos completo")
                         .font(.system(size: 28, weight: .bold))
                     Text("Todos os temas, cores e sons. Pague uma vez, use para sempre.")
                         .font(.body)
                         .foregroundStyle(.secondary)
+                    themeStrip
                     colorStrip
                     VStack(alignment: .leading, spacing: 12) {
                         ForEach(SoundCatalog.all.filter(\.isPremium)) { option in
@@ -41,25 +45,75 @@ struct PaywallView: View {
                                 .foregroundStyle(.primary)
                         }
                     }
-                    .padding(.top, 8)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            VStack(spacing: 12) {
-                // Preço fixo da regra 11.7 até o 8.8 trazer o `displayPrice` do StoreKit.
-                Text("Comprar por R$ 19,90")
-                    .font(.headline)
-                    .foregroundStyle(.black)
-                    .frame(maxWidth: .infinity, minHeight: 52)
-                    .background(tint.opacity(0.4), in: .rect(cornerRadius: 14))
-                Text("Restaurar compra")
-                    .foregroundStyle(tint.opacity(0.4))
-            }
-            .accessibilityHint("Disponível em breve")
+            actions
         }
         .padding(.horizontal, 20)
         .padding(.bottom, 16)
         .presentationDetents([.large])
+        .task { await store.loadProduct() }
+        .onChange(of: store.isUnlocked) { _, unlocked in
+            if unlocked { dismiss() }
+        }
+    }
+
+    // Comprar (altura 52, raio 14, fundo na cor, texto #000) e restaurar. Sem
+    // rede: botão desabilitado + copy 15.7, sem travar (critério de 8.8).
+    private var actions: some View {
+        VStack(spacing: 12) {
+            if store.isOffline {
+                Text("Sem conexão. Tente de novo quando estiver online.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+            }
+            Button {
+                Task { await store.purchase() }
+            } label: {
+                Group {
+                    if let price = store.product?.displayPrice {
+                        Text("Comprar por \(price)")
+                    } else if store.isOffline {
+                        Text("Comprar")
+                    } else {
+                        ProgressView().tint(.black)
+                    }
+                }
+                .font(.headline)
+                .foregroundStyle(.black)
+                .frame(maxWidth: .infinity, minHeight: 52)
+                .background(tint.opacity(canBuy ? 1 : 0.4), in: .rect(cornerRadius: 14))
+            }
+            .disabled(!canBuy)
+            Button("Restaurar compra") {
+                Task { await store.restore() }
+            }
+            .foregroundStyle(tint)
+            .disabled(store.isBusy)
+            .frame(minHeight: 44)
+        }
+        .padding(.top, 8)
+    }
+
+    private var canBuy: Bool { store.product != nil && !store.isBusy }
+
+    // Miniaturas dos 4 temas em linha, cada uma numa cor (design).
+    private var themeStrip: some View {
+        HStack(spacing: 8) {
+            ForEach(Array(TemaRelogio.allCases.enumerated()), id: \.offset) { index, theme in
+                ClockView(theme: theme, time: "07:00", color: Self.thumbnailColors[index].color)
+                    .padding(6)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(.black, in: .rect(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(white: 0x38 / 255), lineWidth: 1))
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("4 temas de relógio")
     }
 
     // Faixa das 5 cores do relógio (o que a compra libera, regra 11.7).
@@ -69,6 +123,7 @@ struct PaywallView: View {
                 Circle().fill(cor.color).frame(width: 36, height: 36)
             }
         }
-        .accessibilityHidden(true)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("5 cores")
     }
 }

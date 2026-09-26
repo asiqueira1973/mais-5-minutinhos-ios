@@ -32,6 +32,7 @@ private struct SettingsForm: View {
     let onColorChange: () -> Void
 
     @Environment(\.modelContext) private var context
+    @Environment(PurchaseStore.self) private var store
     @State private var showsPaywall = false
     // Brilho da tela antes de arrastar o slider (prévia do brilho, 10.6).
     @State private var brightnessBeforePreview: CGFloat?
@@ -88,15 +89,18 @@ private struct SettingsForm: View {
                         showsPaywall = true
                     } label: {
                         LabeledContent {
-                            Text("R$ 19,90")
+                            // Preço do StoreKit (`displayPrice`); some sem rede.
+                            Text(store.product?.displayPrice ?? "")
                         } label: {
                             Text("Comprar").foregroundStyle(tint)
                         }
                     }
                     Button("Restaurar compra", action: onRestore)
+                        .disabled(store.isBusy)
                 }
             }
             Section("Sobre") {
+                NavigationLink("Como usar") { HowToUseView(tint: tint) }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Privacidade")
                     Text("Nenhum dado sai do seu iPhone")
@@ -115,6 +119,7 @@ private struct SettingsForm: View {
             guard brightnessBeforePreview != nil else { return }
             UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }.first?.screen.brightness = CGFloat(value)
         }
+        .task { await store.loadProduct() }
         .onDisappear {
             previewBrightness(false)
             try? context.save()

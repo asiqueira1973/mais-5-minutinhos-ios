@@ -22,6 +22,7 @@ Despertador de cabeceira para iPhone: à noite, relógio grande e escuro; de man
 - Sons próprios: os 7 são **sintetizados por código** (`scripts/make-sounds.py`) e foram aprovados como sons do app pela direção vintage (resposta da 25.2).
 - Tema/cor pagos sem compra válida (ex.: reembolso) caem para LED clássico/vermelho **sem alterar** `preferencias`, igual à regra 11.6 dos sons.
 - Mudar a cor nos Ajustes reagenda os alarmes em `scheduled`, porque a cor da apresentação do sistema é gravada no agendamento.
+- "Restaurar compra" sem nada a restaurar não mostra mensagem (não há copy na seção 15); o botão só volta ao normal.
 - Som pago sem compra na 10.3: toca a prévia **e** abre o paywall, sem escolher o som.
 - Erro genérico do AlarmKit (a seção 15 não define): título "Erro no alarme", texto "Não foi possível salvar. Tente de novo.", botão "OK".
 - Permissão negada ao salvar: o alarme é gravado **inativo** e abre a 10.8. `maximumLimitReached`: gravado inativo + copy 15.6. Outro erro: nada é gravado e a sheet continua aberta.
@@ -46,9 +47,11 @@ App/RootView            lista + cabeceira por cima + 10.5 + 10.8; observa `alarm
 Features/Alarms/        AlarmListView (10.1), AlarmEditView (10.2), PermissionDeniedView (10.8), AlarmController (ordem AlarmKit → SwiftData)
 Features/Ringing/       RingingView (10.5, opção 5A): proporções do design em pontos (retrato 100/430/197, paisagem 44/200/97), relógio no tema
 Features/Settings/      ClockPalette (cores do relógio), SettingsView (10.6)
-Core/Purchase/          Entitlements (regra 11.7: grátis/pago, tema e cor efetivos sem compra)
+Core/Purchase/          Entitlements (regra 11.7: grátis/pago, tema e cor efetivos sem compra), PurchaseStore (StoreKit 2, no ambiente via `.environment(store)`)
 Features/SoundPicker/   SoundPickerView (10.3)
-Features/Paywall/       PaywallView (10.7): layout pronto; compra e restauração no 8.8
+Features/Paywall/       PaywallView (10.7): preço do StoreKit, sem rede → 15.7, fecha sozinho ao liberar
+Features/Settings/HowToUseView  Como usar (10.10, copy 15.11)
+MaisCincoMinutinhos.storekit    StoreKit local (loja BRA) do scheme e dos testes (StoreKitTest)
 Resources/Sounds/       .caf (Linear PCM 44,1 kHz mono ≤ 30 s) + LICENSES.md
 Widget/                 extension com a Live Activity da soneca (AlarmAttributes<Mais5Metadata>)
 Tests/                  Swift Testing (seção 22)

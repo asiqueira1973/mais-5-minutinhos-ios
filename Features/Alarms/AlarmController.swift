@@ -25,8 +25,8 @@ final class AlarmController {
     // Abre a tela 10.8 (permissão negada, seção 5).
     var showsPermissionDenied = false
 
-    // Compra única: entra no épico 8.8. Até lá não há compra, e os sons pagos só
-    // podem ser escolhidos a partir do 8.4.
+    // Compra válida (espelho de `PurchaseStore.isUnlocked`, atualizado pela
+    // `RootView`). Define o som efetivo (regra 11.6) e a cor efetiva (11.7).
     var premiumUnlocked = false
 
     private let scheduler = AlarmScheduler.shared
@@ -146,9 +146,6 @@ final class AlarmController {
             try? await scheduler.schedule(alarme, cor: cor, premiumUnlocked: premiumUnlocked)
         }
     }
-
-    // Restaurar compra: entra no épico 8.8. Entradas: nenhuma. Saída: nenhuma.
-    func restorePurchase() async {}
 
     // Grava o rascunho na linha existente ou cria uma nova com o mesmo UUID.
     // Entradas: rascunho, estado ativo final, linha em edição e contexto. Saída: nenhuma.

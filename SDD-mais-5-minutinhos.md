@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Versão do documento | 1.1 — nome do app definido |
+| Versão do documento | 1.2 — decisões do spike 8.1 (brilho 30%, 11.4 com tela para cima) e tela 10.10 Como usar |
 | Produto | **Mais 5 Minutinhos** — nome na App Store: "Mais 5 Minutinhos – Despertador"; nome sob o ícone: "5 Minutinhos" (ver 24.2) |
 | Responsável de produto | Alexandre Siqueira — Dab Lab |
 | Status | pronto para revisão |
@@ -248,6 +248,7 @@ Perfil único. Tabela lida/escrita entre colchetes.
 - **10.6 Ajustes** — prévia do relógio; tema; cor; 24h; segundos; brilho da cabeceira (slider com prévia); entrar automaticamente; compra/restaurar; sobre/privacidade. [lê/escreve `preferencias`]
 - **10.7 Paywall** (sheet) — o que libera, preço, comprar, restaurar. [não lê tabelas]
 - **10.8 Permissão de alarme negada** (sheet) — explicação e botão para Ajustes do iPhone.
+- **10.10 Como usar** (push a partir da seção "Sobre" dos Ajustes 10.6) — instruções curtas do uso, copy 15.11. Mesmo conteúdo vai para a descrição da App Store. [não lê tabelas] — *incluída em 26/09/2026, pedido de Alexandre.*
 - **10.9 Apresentação do sistema** (não é tela do app; o design escolhe só textos, ícones SF Symbols e cor) — tela bloqueada/Dynamic Island tocando e em soneca.
 
 ## 11. Regras de negócio
@@ -283,7 +284,7 @@ Perfil único. Tabela lida/escrita entre colchetes.
 | Som próprio falhou no spike (8.1) | `customSoundsEnabled = false`; todos os alarmes usam `padrao_iphone`; sons pagos saem da oferta do paywall |
 
 ### 11.4 Entrada automática no modo cabeceira
-Entra quando **todas** forem verdadeiras: `entrar_automatico = true`, app em primeiro plano, aparelho em paisagem, bateria `charging` ou `full`, e há ao menos 1 alarme ativo nas próximas 14 h. Não entra automaticamente se a pessoa saiu manualmente do modo nos últimos 10 min.
+Entra quando **todas** forem verdadeiras: `entrar_automatico = true`, app em primeiro plano, aparelho de lado na horizontal **ou** deitado de costas com a tela para cima (decisão do spike 8.1; posição lida pelo acelerômetro, vale com bloqueio de rotação), bateria `charging` ou `full`, e há ao menos 1 alarme ativo nas próximas 14 h. Não entra automaticamente se a pessoa saiu manualmente do modo nos últimos 10 min.
 
 ### 11.5 Tela de alarme tocando
 Um toque, sem confirmação, sem "segurar para parar". Soneca é o botão maior e fica em cima; Parar embaixo. Nenhuma outra ação na tela.
@@ -333,6 +334,7 @@ Relógio usa `Date()` e o fuso atual do sistema; mudança de fuso ou horário de
 - 15.8 Permissão negada: título "Alarmes desligados" / texto "Para o Mais 5 Minutinhos tocar mesmo no silencioso, permita alarmes nos Ajustes do iPhone." / botão "Abrir Ajustes".
 - 15.9 `NSAlarmKitUsageDescription`: "O Mais 5 Minutinhos usa alarmes para tocar na hora certa, mesmo com o iPhone no silencioso."
 - 15.10 Paywall: título "Mais 5 Minutinhos completo" / "Todos os temas, cores e sons. Pague uma vez, use para sempre." / "Restaurar compra".
+- 15.11 Como usar (aprovada em 26/09/2026): título "Como usar" / 1. **Crie um alarme.** Toque em + e escolha a hora, os dias e o som. / 2. **À noite, deixe o iPhone no carregador.** De lado num suporte ou deitado de costas na mesa, o relógio aparece sozinho. Se preferir, toque em "Dormir". / 3. **O alarme toca mesmo no silencioso.** O volume é o de toque do iPhone (Ajustes › Sons e Tato). / 4. **De manhã, um toque resolve.** "Soneca" é o botão grande; "Parar" fica embaixo. Com a tela bloqueada, deslize para parar. / 5. **Toque no relógio** para clarear a tela por 5 segundos e ver o botão "Sair".
 
 ## 16. Direção visual
 
