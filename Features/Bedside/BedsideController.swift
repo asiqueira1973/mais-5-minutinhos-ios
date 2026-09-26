@@ -11,6 +11,10 @@ final class BedsideController {
     // true enquanto o toque na tela mantém o brilho alto e o botão "Sair" (8.5).
     private(set) var isAwake = false
 
+    // true entre `enter()` e `exit()`; evita guardar o brilho da noite como "anterior".
+    private var isActive = false
+    // true quando o app saiu do primeiro plano com o modo aberto (brilho já devolvido).
+    private var isSuspended = false
     private var savedBrightness: CGFloat?
     private var savedIdleTimer = false
     private var nightBrightness: CGFloat = 0.15
@@ -28,11 +32,11 @@ final class BedsideController {
     // Entradas: brilho da noite (`brilho_cabeceira`, 0,05–1,0, seção 7.2).
     // Saída: nenhuma. Guarda os valores anteriores para `exit()`.
     func enter(brightness: Double) {
+        guard !isActive else { return }
+        isActive = true
+        isSuspended = false
         nightBrightness = CGFloat(min(max(brightness, 0.05), 1.0))
-        savedIdleTimer = UIApplication.shared.isIdleTimerDisabled
-        savedBrightness = screen?.brightness
-        UIApplication.shared.isIdleTimerDisabled = true
-        screen?.brightness = nightBrightness
+        applyNightSettings()
         setOrientation(.landscape, preferred: .landscapeRight)
         startChargerMonitoring()
     }
@@ -40,21 +44,61 @@ final class BedsideController {
     // Sai do modo: restaura idle timer, brilho e retrato (8.5).
     // Entradas: nenhuma. Saída: nenhuma.
     func exit() {
+        guard isActive else { return }
+        isActive = false
         awakeTask?.cancel()
         chargerTask?.cancel()
         if let batteryObserver { NotificationCenter.default.removeObserver(batteryObserver) }
         batteryObserver = nil
         UIDevice.current.isBatteryMonitoringEnabled = false
-        UIApplication.shared.isIdleTimerDisabled = savedIdleTimer
-        if let savedBrightness { screen?.brightness = savedBrightness }
+        // Se o app já tinha saído do primeiro plano, o brilho já foi devolvido.
+        if !isSuspended { restoreUserSettings() }
+        isSuspended = false
         isAwake = false
         showsChargerWarning = false
         setOrientation(.portrait, preferred: .portrait)
     }
 
+    // App saiu do primeiro plano com o modo aberto: devolve brilho e idle timer,
+    // porque o iOS mantém o brilho definido pelo app mesmo fora dele (regra 8.5).
+    // Entradas: nenhuma. Saída: nenhuma.
+    func suspend() {
+        guard isActive, !isSuspended else { return }
+        isSuspended = true
+        awakeTask?.cancel()
+        isAwake = false
+        restoreUserSettings()
+    }
+
+    // App voltou ao primeiro plano com o modo aberto: guarda de novo o brilho da
+    // pessoa (pode ter mudado fora do app) e reaplica o da noite (regra 8.5).
+    // Entradas: nenhuma. Saída: nenhuma.
+    func resume() {
+        guard isActive, isSuspended else { return }
+        isSuspended = false
+        applyNightSettings()
+    }
+
+    // Guarda brilho e idle timer atuais e aplica os da noite.
+    // Entradas: nenhuma. Saída: nenhuma.
+    private func applyNightSettings() {
+        savedIdleTimer = UIApplication.shared.isIdleTimerDisabled
+        savedBrightness = screen?.brightness
+        UIApplication.shared.isIdleTimerDisabled = true
+        screen?.brightness = nightBrightness
+    }
+
+    // Devolve brilho e idle timer guardados na entrada.
+    // Entradas: nenhuma. Saída: nenhuma.
+    private func restoreUserSettings() {
+        UIApplication.shared.isIdleTimerDisabled = savedIdleTimer
+        if let savedBrightness { screen?.brightness = savedBrightness }
+    }
+
     // Toque na tela: brilho a 60% e botão "Sair" por 5 s, depois volta (8.5).
     // Entradas: nenhuma. Saída: nenhuma.
     func wake() {
+        guard isActive, !isSuspended else { return }
         isAwake = true
         screen?.brightness = max(nightBrightness, 0.6)
         awakeTask?.cancel()
@@ -72,6 +116,7 @@ final class BedsideController {
     // Entradas: true quando começa a tocar, false quando para ou entra em soneca.
     // Saída: nenhuma.
     func setRinging(_ ringing: Bool) {
+        guard isActive, !isSuspended else { return }
         awakeTask?.cancel()
         isAwake = false
         screen?.brightness = ringing ? max(nightBrightness, 0.6) : nightBrightness

@@ -14,6 +14,7 @@ struct BedsideView: View {
     let onExit: () -> Void
 
     @State private var controller = BedsideController()
+    @Environment(\.scenePhase) private var scenePhase
     // Deslocamento anti-marcação: até 6 pt em posição aleatória a cada minuto (8.5).
     @State private var burnInOffset: CGSize = .zero
 
@@ -31,6 +32,10 @@ struct BedsideView: View {
         .persistentSystemOverlays(.hidden)
         .onAppear { controller.enter(brightness: brightness) }
         .onDisappear { controller.exit() }
+        // Fora do primeiro plano o brilho da pessoa é devolvido; na volta, reaplicado.
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { controller.resume() } else { controller.suspend() }
+        }
         .onChange(of: isRinging) { _, ringing in controller.setRinging(ringing) }
         .task { await shiftEveryMinute() }
     }
