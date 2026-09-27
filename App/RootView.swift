@@ -80,12 +80,13 @@ struct RootView: View {
         // Compra, restauração ou reembolso: libera ou retira na hora, sem reiniciar,
         // e reagenda os alarmes com o som e a cor efetivos (critérios de 8.8, 11.6).
         .onChange(of: store.isUnlocked, initial: true) { _, unlocked in
-            guard controller.premiumUnlocked != unlocked else { return }
-            controller.premiumUnlocked = unlocked
-            Task {
-                await controller.reconcile(in: context)
-                await controller.refreshPresentation(in: context)
-            }
+            guard store.hasLoadedEntitlement else { return }
+            Task { await controller.applyEntitlement(unlocked, in: context) }
+        }
+        // Primeira leitura da compra: só então o estado é confiável para aplicar.
+        .onChange(of: store.hasLoadedEntitlement) { _, loaded in
+            guard loaded else { return }
+            Task { await controller.applyEntitlement(store.isUnlocked, in: context) }
         }
         .onAppear { controller.context = context }
         .task { await observeAlarmKit() }
@@ -117,6 +118,7 @@ struct RootView: View {
     // Entradas: nenhuma. Saída: nenhuma (roda enquanto a view existir).
     private func observeAlarmKit() async {
         for await states in AlarmScheduler.shared.observe() {
+            AlarmLog.log("alarmUpdates: \(states.map { "\(AlarmLog.short($0.key))=\($0.value)" }.sorted())")
             alertingID = states.first { $0.value == .alerting }?.key
             trackSnoozes(states)
             let ids = Set(states.keys)

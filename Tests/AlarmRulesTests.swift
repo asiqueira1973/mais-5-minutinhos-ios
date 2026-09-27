@@ -93,9 +93,9 @@ struct NextAlarmTests {
 struct ReconciliationTests {
     let a = UUID(), b = UUID(), c = UUID(), orphan = UUID()
 
-    // Linha: ativo, com ou sem repetição, com ou sem som pago.
-    func row(_ id: UUID, ativo: Bool = true, repeats: Bool = false, premium: Bool = false) -> AlarmRowState {
-        AlarmRowState(id: id, ativo: ativo, repeats: repeats, usesPremiumSound: premium)
+    // Linha: ativo, com ou sem repetição.
+    func row(_ id: UUID, ativo: Bool = true, repeats: Bool = false) -> AlarmRowState {
+        AlarmRowState(id: id, ativo: ativo, repeats: repeats)
     }
 
     // Ativo, sem repetição, ausente no AlarmKit → já tocou → ativo = false.
@@ -118,10 +118,11 @@ struct ReconciliationTests {
         #expect(Reconciliation.plan(rows: [], system: [orphan: .scheduled]) == [.cancel(orphan)])
     }
 
-    // Som pago agendado → reagenda (som efetivo acompanha a compra); em soneca não mexe.
-    @Test func premiumSoundRescheduledOnlyWhenScheduled() {
-        #expect(Reconciliation.plan(rows: [row(a, premium: true)], system: [a: .scheduled]) == [.reschedule(a)])
-        #expect(Reconciliation.plan(rows: [row(a, premium: true)], system: [a: .countdown]).isEmpty)
+    // Alarme agendado ou em soneca nunca é reagendado pela reconciliação: o
+    // reagendamento contínuo causava a disputa do bug do build 2.
+    @Test func presentAlarmsAreNeverRescheduled() {
+        #expect(Reconciliation.plan(rows: [row(a, repeats: true)], system: [a: .scheduled]).isEmpty)
+        #expect(Reconciliation.plan(rows: [row(a)], system: [a: .countdown]).isEmpty)
     }
 
     // Tudo em ordem → nenhuma ação.

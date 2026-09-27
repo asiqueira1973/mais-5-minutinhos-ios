@@ -129,8 +129,10 @@ final class AlarmController {
     // Entradas: contexto. Saída: nenhuma.
     func reconcile(in context: ModelContext) async {
         guard scheduler.authorizationState == .authorized else { return }
-        let alarmes = (try? context.fetch(FetchDescriptor<Alarme>())) ?? []
-        await scheduler.reconcile(alarmes, cor: clockColor(in: context), premiumUnlocked: premiumUnlocked)
+        await scheduler.reconcile(
+            fetch: { (try? context.fetch(FetchDescriptor<Alarme>())) ?? [] },
+            cor: clockColor(in: context), premiumUnlocked: premiumUnlocked
+        )
         try? context.save()
     }
 
@@ -139,12 +141,26 @@ final class AlarmController {
     // tocando ou em soneca. Entradas: contexto. Saída: nenhuma.
     func refreshPresentation(in context: ModelContext) async {
         guard scheduler.authorizationState == .authorized else { return }
-        let states = scheduler.systemStates()
-        let cor = clockColor(in: context)
-        let alarmes = (try? context.fetch(FetchDescriptor<Alarme>())) ?? []
-        for alarme in alarmes where alarme.ativo && states[alarme.id] == .scheduled {
-            try? await scheduler.schedule(alarme, cor: cor, premiumUnlocked: premiumUnlocked)
-        }
+        await scheduler.refreshScheduled(
+            fetch: { (try? context.fetch(FetchDescriptor<Alarme>())) ?? [] },
+            cor: clockColor(in: context), premiumUnlocked: premiumUnlocked
+        )
+    }
+
+    // Chave do último estado de compra já aplicado aos alarmes agendados.
+    private static let appliedUnlockedKey = "alarms.appliedUnlocked"
+
+    // A compra carregou ou mudou: atualiza o espelho e reagenda os alarmes só se
+    // o estado for diferente do último já aplicado, para abrir o app não
+    // reagendar nada (causa do bug do build 2). Reembolso cai aqui também (8.8).
+    // Entradas: compra válida agora e contexto. Saída: nenhuma.
+    func applyEntitlement(_ unlocked: Bool, in context: ModelContext) async {
+        premiumUnlocked = unlocked
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: Self.appliedUnlockedKey) as? Bool != unlocked else { return }
+        AlarmLog.log("compra mudou: liberado=\(unlocked); reaplicando sons e cor")
+        await refreshPresentation(in: context)
+        defaults.set(unlocked, forKey: Self.appliedUnlockedKey)
     }
 
     // Grava o rascunho na linha existente ou cria uma nova com o mesmo UUID.

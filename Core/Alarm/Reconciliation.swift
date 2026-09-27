@@ -8,8 +8,6 @@ nonisolated struct AlarmRowState: Sendable, Equatable {
     let ativo: Bool
     // true quando `dias_repeticao` não está vazio.
     let repeats: Bool
-    // true quando `som` é um dos sons pagos (regra 11.7).
-    let usesPremiumSound: Bool
 }
 
 // Ação que a reconciliação manda aplicar (regra 11.6).
@@ -32,12 +30,11 @@ nonisolated enum Reconciliation {
     // - ativo, sem repetição, ausente no AlarmKit → já tocou → `deactivate`;
     // - ativo, com repetição, ausente → `reschedule`;
     // - inativo, presente → `cancel`;
-    // - presente no AlarmKit sem linha → `cancel`;
-    // - som pago → `reschedule`, para o som efetivo acompanhar a compra: sem
-    //   compra válida toca `padrao_iphone` sem alterar o campo `som`, e volta ao
-    //   som pago se a compra for restaurada. O AlarmKit não informa o som
-    //   agendado, então o reagendamento é feito sempre, mas só com o alarme em
-    //   `scheduled`, para não interromper uma soneca ou um toque em andamento.
+    // - presente no AlarmKit sem linha → `cancel`.
+    //
+    // O som pago sem compra (último item da 11.6) NÃO é tratado aqui: reagendar
+    // a cada reconciliação criava disputas com o próprio AlarmKit (bug do build 2).
+    // O som efetivo é reaplicado só quando a compra muda (`refreshScheduled`).
     static func plan(rows: [AlarmRowState], system: [UUID: Alarm.State]) -> [ReconciliationAction] {
         var actions: [ReconciliationAction] = []
         for row in rows {
@@ -45,8 +42,6 @@ nonisolated enum Reconciliation {
             if row.ativo {
                 if state == nil {
                     actions.append(row.repeats ? .reschedule(row.id) : .deactivate(row.id))
-                } else if row.usesPremiumSound, state == .scheduled {
-                    actions.append(.reschedule(row.id))
                 }
             } else if state != nil {
                 actions.append(.cancel(row.id))

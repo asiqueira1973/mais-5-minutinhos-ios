@@ -14,6 +14,9 @@ final class PurchaseStore {
     // true com compra válida (não reembolsada). Observável: libera tudo na hora,
     // sem reiniciar (critério de 8.8).
     private(set) var isUnlocked = false
+    // true depois da primeira leitura de `currentEntitlements`. Antes disso
+    // `isUnlocked` ainda não significa "sem compra" (evita reagendar à toa na abertura).
+    private(set) var hasLoadedEntitlement = false
     // Produto carregado da App Store; nil sem rede ou enquanto carrega.
     private(set) var product: Product?
     // true quando o produto não pôde ser carregado (sem rede): paywall mostra 15.7.
@@ -101,6 +104,7 @@ final class PurchaseStore {
         if UserDefaults.standard.bool(forKey: "debugUnlocked") { unlocked = true }
         #endif
         isUnlocked = unlocked
+        hasLoadedEntitlement = true
     }
 
     // Trata uma transação: conclui (`finish`) para não ser reentregue e relê o

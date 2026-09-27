@@ -209,6 +209,7 @@ A raiz é `App/RootView.swift`. Ela observa o AlarmKit, reconcilia, avalia a ent
 | 14 | Comportamento com reembolso para tema/cor não definido | Tema/cor pagos caem para LED/vermelho sem alterar `preferencias` | Mesmo tratamento dos sons (11.6), princípio 0.5. |
 | 15 | — | Abertura do app (`UILaunchScreen`) em preto | Evita clarão branco à noite (princípio 0.3). |
 | 16 | — | "Restaurar compra" sem nada a restaurar não mostra mensagem | A seção 15 não tem copy para isso. |
+| 19 | 11.6: "som pago sem compra válida → reagenda com padrão" a cada reconciliação | O som efetivo é reaplicado **só quando a compra muda** (último estado aplicado guardado em `UserDefaults`); todas as operações no AlarmKit passam por uma fila (uma de cada vez) | Bug do build 2 (27/09/2026): reagendar a cada abertura + reconciliação disparada pelo sumiço momentâneo do alarme criavam operações concorrentes no mesmo id; o alarme podia terminar sem agendamento e não tocar. |
 | 18 | — | `ITSAppUsesNonExemptEncryption = NO` no Info.plist | Só frameworks da Apple; evita o "Missing Compliance" a cada build. |
 | 17 | — | Botão de volume durante o toque interrompe o alarme | Comportamento do sistema observado no spike; o app não controla. |
 

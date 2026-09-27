@@ -86,4 +86,7 @@ xcrun devicectl device install app --device <id> build/DerivedData/Build/Product
 - **Simulador:** o toque sintético curto não liga `Toggle`. Use `duration: 0.15`.
 - **Abertura do app:** o `UILaunchScreen` usa a cor `LaunchBackground` (preta), para não haver clarão branco à noite.
 - **Só iPhone:** `TARGETED_DEVICE_FAMILY: "1"` precisa estar em **cada target** do `project.yml`. No nível do projeto, o XcodeGen sobrescreve com "1,2" e o build sai com iPad (aconteceu no build 1). Confira `UIDeviceFamily` no archive antes de enviar.
+- **Fila do AlarmKit:** toda operação (`schedule`, `cancel`, `reconcile`, `refreshScheduled`) passa por `exclusive` no `AlarmScheduler`. Nunca chame o `AlarmManager` direto de fora dele. Reagendar = cancelar + agendar; sem a fila, a reconciliação disparada pelo sumiço momentâneo disputava o mesmo id (bug do build 2).
+- **Compra na abertura:** só aplique o estado da compra depois de `PurchaseStore.hasLoadedEntitlement`. Antes disso `isUnlocked = false` não significa "sem compra".
+- **Diagnóstico:** `AlarmLog` registra agendamentos, cancelamentos, reconciliações e `alarmUpdates` (subsystem `com.dablab.mais5minutinhos`, categoria `alarm`; em Debug também no console, veja `xcrun simctl launch --console-pty`).
 - **Data em pt-BR:** use `Locale(identifier: "pt_BR")` nos textos de data. O aparelho de teste está em inglês.

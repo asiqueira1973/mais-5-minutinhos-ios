@@ -1,6 +1,24 @@
 import ActivityKit
 import AlarmKit
+import OSLog
 import SwiftUI
+
+// Registro de diagnóstico do agendamento (categoria "alarm"). Só ids curtos,
+// horas e estados; nenhum dado pessoal. Em DEBUG também vai para o console.
+nonisolated enum AlarmLog {
+    static let logger = Logger(subsystem: "com.dablab.mais5minutinhos", category: "alarm")
+
+    // Registra uma linha. Entradas: texto. Saída: nenhuma.
+    static func log(_ message: String) {
+        logger.notice("\(message, privacy: .public)")
+        #if DEBUG
+        print("[alarm] \(Date.now.formatted(date: .omitted, time: .standard)) \(message)")
+        #endif
+    }
+
+    // Id curto para o registro. Entradas: UUID. Saída: 8 primeiros caracteres.
+    static func short(_ id: UUID) -> String { String(id.uuidString.prefix(8)) }
+}
 
 // Valores de um alarme usados para agendar (seção 7.1). Existe separado do
 // modelo SwiftData para: (1) agendar uma edição antes de gravá-la (critério de
@@ -58,6 +76,40 @@ final class AlarmScheduler {
 
     private var manager: AlarmManager { .shared }
 
+    // Fila de operações: agendar, cancelar e reconciliar rodam uma de cada vez.
+    // Sem isso, o "cancela e agenda de novo" de um reagendamento abria uma janela
+    // em que o alarme sumia do AlarmKit; o app percebia o sumiço, disparava uma
+    // reconciliação que reagendava o mesmo id em paralelo, e a disputa podia
+    // deixar o alarme sem agendamento (bug do build 2, 27/09/2026).
+    private var isBusy = false
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+
+    // Espera a vez na fila. Entradas: nenhuma. Saída: nenhuma.
+    private func acquire() async {
+        if isBusy {
+            await withCheckedContinuation { waiters.append($0) }
+        } else {
+            isBusy = true
+        }
+    }
+
+    // Libera a fila para a próxima operação. Entradas: nenhuma. Saída: nenhuma.
+    private func release() {
+        if waiters.isEmpty {
+            isBusy = false
+        } else {
+            waiters.removeFirst().resume()
+        }
+    }
+
+    // Roda a operação com exclusividade na fila.
+    // Entradas: operação. Saída: o resultado dela; repassa o erro.
+    private func exclusive<T>(_ operation: () async throws -> T) async rethrows -> T {
+        await acquire()
+        defer { release() }
+        return try await operation()
+    }
+
     // Estado atual da permissão (seção 5).
     var authorizationState: AlarmManager.AuthorizationState { manager.authorizationState }
 
@@ -81,14 +133,29 @@ final class AlarmScheduler {
     // Saída: nenhuma. Lança `AlarmSchedulerError.limitReached` (regra 11.1) ou o
     // erro do AlarmKit.
     func schedule(_ draft: AlarmDraft, cor: CorRelogio, premiumUnlocked: Bool) async throws {
+        try await exclusive {
+            try await scheduleNow(draft, cor: cor, premiumUnlocked: premiumUnlocked)
+        }
+    }
+
+    // Agendamento em si, sem passar pela fila (quem chama já está com a vez).
+    // Entradas e saída: como `schedule(_:cor:premiumUnlocked:)`.
+    private func scheduleNow(_ draft: AlarmDraft, cor: CorRelogio, premiumUnlocked: Bool) async throws {
+        let tag = "\(AlarmLog.short(draft.id)) \(String(format: "%02d:%02d", draft.hora, draft.minuto)) dias=\(draft.dias_repeticao)"
         if systemStates()[draft.id] != nil {
+            AlarmLog.log("schedule: cancela antes \(tag)")
             try manager.cancel(id: draft.id)
         }
         let soundFile = SoundCatalog.effectiveFileName(for: draft.som, premiumUnlocked: premiumUnlocked)
         do {
             try await Self.scheduleOffMain(draft, cor: cor, soundFile: soundFile)
+            AlarmLog.log("schedule: OK \(tag) som=\(soundFile ?? "padrao") estado=\(systemStates()[draft.id].map { "\($0)" } ?? "AUSENTE")")
         } catch let error as AlarmManager.AlarmError where error == .maximumLimitReached {
+            AlarmLog.log("schedule: LIMITE \(tag)")
             throw AlarmSchedulerError.limitReached
+        } catch {
+            AlarmLog.log("schedule: ERRO \(tag) \(error)")
+            throw error
         }
     }
 
@@ -102,8 +169,11 @@ final class AlarmScheduler {
     // não existe no AlarmKit (já tocou ou estava inativo), não há o que cancelar.
     // Entradas: id. Saída: nenhuma. Lança o erro do AlarmKit.
     func cancel(id: UUID) async throws {
-        guard systemStates()[id] != nil else { return }
-        try manager.cancel(id: id)
+        try await exclusive {
+            guard systemStates()[id] != nil else { return }
+            AlarmLog.log("cancel: \(AlarmLog.short(id))")
+            try manager.cancel(id: id)
+        }
     }
 
     // Para o alarme que está tocando (tela 10.5, premissa P3).
@@ -127,26 +197,44 @@ final class AlarmScheduler {
 
     // Reconcilia SwiftData com AlarmKit (regra 11.6), aplicando o plano de
     // `Reconciliation.plan`. Grava `ativo = false` direto nas linhas; quem chama salva.
-    // Entradas: todas as linhas de `alarme`, cor do relógio e se a compra está
+    // As linhas são lidas só quando chega a vez na fila, para refletir o banco
+    // depois de qualquer salvamento em andamento.
+    // Entradas: leitura das linhas de `alarme`, cor do relógio e se a compra está
     // válida. Saída: nenhuma. Falhas individuais não interrompem as demais.
-    func reconcile(_ alarmes: [Alarme], cor: CorRelogio, premiumUnlocked: Bool) async {
-        let rows = alarmes.map {
-            AlarmRowState(
-                id: $0.id, ativo: $0.ativo, repeats: !$0.dias_repeticao.isEmpty,
-                usesPremiumSound: SoundCatalog.option($0.som).isPremium
-            )
-        }
-        let byID = Dictionary(alarmes.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
-        for action in Reconciliation.plan(rows: rows, system: systemStates()) {
-            switch action {
-            case .deactivate(let id):
-                byID[id]?.ativo = false
-            case .reschedule(let id):
-                if let alarme = byID[id] {
-                    try? await schedule(alarme, cor: cor, premiumUnlocked: premiumUnlocked)
+    func reconcile(fetch: () -> [Alarme], cor: CorRelogio, premiumUnlocked: Bool) async {
+        await exclusive {
+            let alarmes = fetch()
+            let rows = alarmes.map {
+                AlarmRowState(id: $0.id, ativo: $0.ativo, repeats: !$0.dias_repeticao.isEmpty)
+            }
+            let byID = Dictionary(alarmes.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+            let system = systemStates()
+            let plan = Reconciliation.plan(rows: rows, system: system)
+            AlarmLog.log("reconcile: linhas=\(rows.count) sistema=\(system.map { "\(AlarmLog.short($0.key))=\($0.value)" }.sorted()) plano=\(plan)")
+            for action in plan {
+                switch action {
+                case .deactivate(let id):
+                    byID[id]?.ativo = false
+                case .reschedule(let id):
+                    if let alarme = byID[id] {
+                        try? await scheduleNow(AlarmDraft(alarme), cor: cor, premiumUnlocked: premiumUnlocked)
+                    }
+                case .cancel(let id):
+                    try? manager.cancel(id: id)
                 }
-            case .cancel(let id):
-                try? manager.cancel(id: id)
+            }
+        }
+    }
+
+    // Reagenda, numa vez só da fila, os alarmes ativos que estão só agendados,
+    // para aplicar cor ou som efetivo novos (troca de cor, compra liberada ou
+    // retirada, regras 11.6/11.7). Não mexe em alarme tocando ou em soneca.
+    // Entradas: leitura das linhas, cor e compra. Saída: nenhuma.
+    func refreshScheduled(fetch: () -> [Alarme], cor: CorRelogio, premiumUnlocked: Bool) async {
+        await exclusive {
+            let states = systemStates()
+            for alarme in fetch() where alarme.ativo && states[alarme.id] == .scheduled {
+                try? await scheduleNow(AlarmDraft(alarme), cor: cor, premiumUnlocked: premiumUnlocked)
             }
         }
     }
