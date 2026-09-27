@@ -8,7 +8,7 @@ Linear PCM com:
 
 Uso: python3 scripts/make-sounds.py <pasta_wav>
 
-Status: PLACEHOLDER até Alexandre aprovar ou trocar cada som (pergunta 25.2).
+Aprovados por Alexandre (26/09/2026). Build 3: compressão tanh + pico 98% para soarem mais alto.
 """
 import math
 import random
@@ -57,9 +57,17 @@ def fade_edges(buf, seconds=0.02):
     return buf
 
 
-def normalize(buf, peak=0.85):
+def normalize(buf, peak=0.98):
     m = max(abs(v) for v in buf) or 1.0
     return [v * peak / m for v in buf]
+
+
+def compress(buf, drive=3.0):
+    """Compressão suave (tanh): sobe o volume médio sem estourar o pico.
+    Alarmes precisam soar alto no volume de toque do iPhone (build 3)."""
+    m = max(abs(v) for v in buf) or 1.0
+    k = math.tanh(drive)
+    return [math.tanh(drive * v / m) / k for v in buf]
 
 
 def write(path, buf):
@@ -113,10 +121,11 @@ def despertar_suave():
         mix(out, note, int(t * SR))
         t += step
         k += 1
-    out = out[: int(total * SR)]
+    # Comprime antes da curva de volume, para o crescendo continuar audível.
+    out = compress(out[: int(total * SR)])
     for i in range(len(out)):
         # Curva de volume: começa baixo e chega ao máximo no fim dos 20 s.
-        g = 0.1 + 0.9 * (i / len(out)) ** 1.6
+        g = 0.15 + 0.85 * (i / len(out)) ** 1.6
         out[i] *= g
     return out
 
@@ -197,7 +206,20 @@ def radio_relogio():
     return out[: int(total * SR)]
 
 
+def bipe_digital():
+    """Bipe digital: 4 bipes de 2 kHz, pausa, 4 vezes (4 s). Mesmo desenho do spike 8.1."""
+    out = []
+    for _ in range(4):
+        for _ in range(4):
+            n = int(SR * 0.08)
+            out.extend(math.sin(2 * math.pi * 2000 * i / SR) * min(1.0, i / 220, (n - i) / 220) for i in range(n))
+            out.extend(silence(0.07))
+        out.extend(silence(0.4))
+    return out
+
+
 SOUNDS = {
+    "bipe_digital": bipe_digital,
     "campainha_classica": campainha_classica,
     "sino": sino,
     "despertar_suave": despertar_suave,
@@ -209,6 +231,8 @@ SOUNDS = {
 if __name__ == "__main__":
     folder = sys.argv[1]
     for name, make in SOUNDS.items():
-        buf = normalize(fade_edges(make()))
+        raw = make()
+        # O despertar suave já vem comprimido de dentro (preserva o crescendo).
+        buf = normalize(fade_edges(raw if name == "despertar_suave" else compress(raw)))
         write(f"{folder}/{name}.wav", buf)
         print(f"{name}: {len(buf) / SR:.1f} s")

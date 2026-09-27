@@ -59,4 +59,4 @@ xcodebuild archive -project MaisCincoMinutinhos.xcodeproj -scheme MaisCincoMinut
 xcodebuild -exportArchive -archivePath build/MaisCincoMinutinhos.xcarchive -exportPath build/export -exportOptionsPlist ExportOptions.plist -allowProvisioningUpdates
 ```
 
-O `ExportOptions.plist` envia direto para o App Store Connect (`destination: upload`) com a conta logada no Xcode. **Antes de cada novo envio, aumente `CURRENT_PROJECT_VERSION` no `project.yml`**, porque a Apple recusa um número de build repetido. Histórico: 1.0.0 (1) em 26/09/2026 (saiu com suporte a iPad por engano); 1.0.0 (2) só iPhone.
+O `ExportOptions.plist` envia direto para o App Store Connect (`destination: upload`) com a conta logada no Xcode. **Antes de cada novo envio, aumente `CURRENT_PROJECT_VERSION` no `project.yml`**, porque a Apple recusa um número de build repetido. Histórico: 1.0.0 (1) em 26/09/2026 (saiu com suporte a iPad por engano); 1.0.0 (2) só iPhone; 1.0.0 (3) em 27/09/2026: correção do alarme que podia não tocar + sons mais altos.
