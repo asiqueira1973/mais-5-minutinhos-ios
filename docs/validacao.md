@@ -22,3 +22,4 @@ A seção 26 exige todos os critérios de 8.1 a 8.8 verificados em iPhone físic
 - Ainda a conferir: Foco Dormir, alarme de toque único aparece desligado na lista depois de parar, entrada automática no carregador, "Restaurar compra".
 - 27/09/2026, build 2: alarme diário 8:27 não tocou (causa: reagendamentos concorrentes do mesmo id, ver DOCUMENTACAO-TECNICA §6 item 19). Versão retirada da revisão.
 - 27/09/2026, TestFlight build 3: alarme com som padrão e alarme com Rádio-relógio tocaram **com o app reaberto antes do horário** (o cenário que falhava no build 2). ✅ Correção validada no aparelho.
+- 27/09/2026: build 1.0.0 (3) selecionado na versão 1.0.0 e reenviado à revisão.

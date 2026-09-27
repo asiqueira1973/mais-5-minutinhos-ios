@@ -12,7 +12,7 @@ Despertador de cabeceira para iPhone: à noite, relógio grande e escuro; de man
 - `docs/validacao.md`: o que cada épico já verificou (iPhone, simulador, testes) e o que falta em aparelho antes do envio.
 
 ## Estado
-MVP completo (épicos 8.1–8.8 + tela 10.10). Build 1.0.0 (2) submetido à App Store em 26/09/2026. Ficha: `docs/app-store/`. Roteiro em aparelho ainda parcial (`docs/validacao.md`).
+MVP completo (épicos 8.1–8.8 + tela 10.10). Build 1.0.0 (3) em revisão na App Store desde 27/09/2026 (o build 2 foi retirado: alarme podia não tocar). Ficha: `docs/app-store/`. Roteiro em aparelho ainda parcial (`docs/validacao.md`).
 
 ## Decisões já tomadas (não reabrir)
 - Deployment target iOS 26.0, usando `#available(iOS 26.1, *)` onde o SDK 26.1 mudou o AlarmKit.
